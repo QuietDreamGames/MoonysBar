@@ -1,0 +1,6 @@
+Event	ID	Name			Wwise Object Path	Notes
+	2933799906	Play_621601__crushedloops__lofi_strums			\Default Work Unit\Play_621601__crushedloops__lofi_strums	
+
+In Memory Audio	ID	Name	Audio source file		Wwise Object Path	Notes	Data Size
+	1000968478	621601__crushedloops__lofi-strums	C:\UnityProjects\BaseGameLayout\BaseGameLayout_WwiseProject\.cache\BF\{BF8B4C04-07C0-0A40-7F3C-2A1C4561F70F}.wem		\Actor-Mixer Hierarchy\Default Work Unit\621601__crushedloops__lofi-strums		2822496
+

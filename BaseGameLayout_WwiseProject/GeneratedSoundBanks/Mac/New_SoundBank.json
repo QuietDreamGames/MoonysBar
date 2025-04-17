@@ -1,0 +1,47 @@
+{
+ "SoundBanksInfo": {
+  "Platform": "Mac",
+  "BasePlatform": "Mac",
+  "SchemaVersion": "16",
+  "SoundBankVersion": "154",
+  "SoundBanks": [
+   {
+    "Id": "4072029455",
+    "Type": "User",
+    "GUID": "{81C2AA69-CD20-4521-A945-55B1CC898DA4}",
+    "Language": "SFX",
+    "Hash": "{09067592-815C-F7BE-7DEB-741C61F8F84B}",
+    "ObjectPath": "\\SoundBanks\\Default Work Unit\\New_SoundBank",
+    "ShortName": "New_SoundBank",
+    "Path": "New_SoundBank.bnk",
+    "Media": [
+     {
+      "Id": "1000968478",
+      "Language": "SFX",
+      "Streaming": "false",
+      "Location": "Memory",
+      "ShortName": "621601__crushedloops__lofi-strums.wav",
+      "CachePath": "BF/{BF8B4C04-07C0-0A40-7F3C-2A1C4561F70F}.wem"
+     }
+    ],
+    "Events": [
+     {
+      "Id": "2933799906",
+      "Name": "Play_621601__crushedloops__lofi_strums",
+      "ObjectPath": "\\Events\\Default Work Unit\\Play_621601__crushedloops__lofi_strums",
+      "GUID": "{41D765AB-1849-4243-9AAA-B524EC002289}",
+      "DurationType": "OneShot",
+      "DurationMin": "16",
+      "DurationMax": "16",
+      "MediaRefs": [
+       {
+        "Id": "1000968478"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "FileHash": "{07B9B5C6-33DD-EE27-D715-820BA3788CF7}"
+ }
+}

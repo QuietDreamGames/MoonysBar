@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{40DDB583-39C7-4F01-8CA0-9E9B9DF9E4ED}" SchemaVersion="123">
+	<Events>
+		<WorkUnit Name="Default Work Unit" ID="{40DDB583-39C7-4F01-8CA0-9E9B9DF9E4ED}" PersistMode="Standalone">
+			<ChildrenList>
+				<Event Name="Play_621601__crushedloops__lofi_strums" ID="{41D765AB-1849-4243-9AAA-B524EC002289}">
+					<ChildrenList>
+						<Action Name="" ID="{DE58A69A-180A-4F9D-9742-D32F0FDBFFDB}" ShortID="129295784">
+							<ReferenceList>
+								<Reference Name="Target">
+									<ObjectRef Name="621601__crushedloops__lofi-strums" ID="{76F7E3B6-8D65-4406-AE68-F3334FE6F072}" WorkUnitID="{5BC8518B-9B2F-4D16-8D94-22D5B2869615}"/>
+								</Reference>
+							</ReferenceList>
+						</Action>
+					</ChildrenList>
+				</Event>
+			</ChildrenList>
+		</WorkUnit>
+	</Events>
+</WwiseDocument>

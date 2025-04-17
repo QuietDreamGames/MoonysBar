@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{E0961247-18F6-4939-90F3-DA3F3FB040F2}" SchemaVersion="123">
+	<SoundBanks>
+		<WorkUnit Name="Default Work Unit" ID="{E0961247-18F6-4939-90F3-DA3F3FB040F2}" PersistMode="Standalone">
+			<ChildrenList>
+				<SoundBank Name="New_SoundBank" ID="{81C2AA69-CD20-4521-A945-55B1CC898DA4}">
+					<ObjectInclusionList>
+						<ObjectRef Name="Play_621601__crushedloops__lofi_strums" ID="{41D765AB-1849-4243-9AAA-B524EC002289}" WorkUnitID="{40DDB583-39C7-4F01-8CA0-9E9B9DF9E4ED}" Origin="Manual" Filter="7"/>
+					</ObjectInclusionList>
+					<ObjectExclusionList/>
+					<GameSyncExclusionList/>
+				</SoundBank>
+			</ChildrenList>
+		</WorkUnit>
+	</SoundBanks>
+</WwiseDocument>

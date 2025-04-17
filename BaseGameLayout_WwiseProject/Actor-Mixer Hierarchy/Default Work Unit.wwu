@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<WwiseDocument Type="WorkUnit" ID="{5BC8518B-9B2F-4D16-8D94-22D5B2869615}" SchemaVersion="123">
+	<AudioObjects>
+		<WorkUnit Name="Default Work Unit" ID="{5BC8518B-9B2F-4D16-8D94-22D5B2869615}" PersistMode="Standalone">
+			<ChildrenList>
+				<Sound Name="621601__crushedloops__lofi-strums" ID="{76F7E3B6-8D65-4406-AE68-F3334FE6F072}" ShortID="842164602">
+					<ReferenceList>
+						<Reference Name="Conversion">
+							<ObjectRef Name="Default Conversion Settings" ID="{6D1B890C-9826-4384-BF07-C15223E9FB56}" WorkUnitID="{794167C4-B4EB-4C8C-B818-3670AF08FA50}"/>
+						</Reference>
+						<Reference Name="OutputBus">
+							<ObjectRef Name="Master Audio Bus" ID="{1514A4D8-1DA6-412A-A17E-75CA0C2149F3}" WorkUnitID="{A9E16E80-2D45-429C-B872-9DD37DE72548}"/>
+						</Reference>
+					</ReferenceList>
+					<ChildrenList>
+						<AudioFileSource Name="621601__crushedloops__lofi-strums" ID="{A5758572-33DD-47E4-82BC-25C0762F75B0}">
+							<Language>SFX</Language>
+							<AudioFile>621601__crushedloops__lofi-strums.wav</AudioFile>
+							<MediaIDList>
+								<MediaID ID="1000968478"/>
+							</MediaIDList>
+						</AudioFileSource>
+					</ChildrenList>
+					<ActiveSourceList>
+						<ActiveSource Name="621601__crushedloops__lofi-strums" ID="{A5758572-33DD-47E4-82BC-25C0762F75B0}" Platform="Linked"/>
+					</ActiveSourceList>
+				</Sound>
+			</ChildrenList>
+		</WorkUnit>
+	</AudioObjects>
+</WwiseDocument>
