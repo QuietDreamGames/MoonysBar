@@ -1,0 +1,65 @@
+{
+    "name": "MainInputMap",
+    "maps": [
+        {
+            "name": "barMixGame",
+            "id": "ec410dce-aed6-4204-8b98-22ccec0f16d1",
+            "actions": [
+                {
+                    "name": "click",
+                    "type": "Button",
+                    "id": "596b9052-6bf6-4dbf-9981-bb23a3055d0a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "clickhold",
+                    "type": "Button",
+                    "id": "53c3ea55-49e6-4639-8627-e0d236291e63",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "de40b664-e324-4179-907f-6af92e5fc84d",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5bf47398-aa94-4a0f-ab71-5ee0441062a3",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e2976f30-5a9a-4dcb-9333-f966c8e15bc1",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "clickhold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
