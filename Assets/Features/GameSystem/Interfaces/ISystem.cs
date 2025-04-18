@@ -1,5 +1,5 @@
 
-namespace Features.System.Interfaces
+namespace Features.GameSystem.Interfaces
 {
     public interface ISystem
     {

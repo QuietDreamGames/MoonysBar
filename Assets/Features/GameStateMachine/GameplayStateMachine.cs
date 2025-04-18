@@ -4,11 +4,13 @@ using Features.FiniteStateMachine;
 using Features.FiniteStateMachine.Interfaces;
 using Features.GameStateMachine.States;
 using Features.TimeSystem.Interfaces;
+using JetBrains.Annotations;
 
 namespace Features.GameStateMachine
 {
     public class GameplayStateMachine : BaseStateMachine
     {
+        [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public GameplayStateMachine(
             ITimeSystem gameplayTimeSystem 
             ) : base(new Dictionary<Type, IState>())
