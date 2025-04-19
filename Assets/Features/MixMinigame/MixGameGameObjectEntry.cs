@@ -1,4 +1,3 @@
-using System;
 using Features.TimeSystem.Interfaces;
 using Features.TimeSystem.Interfaces.Handlers;
 using Features.TimeSystem.Interfaces.Injected;
@@ -11,7 +10,7 @@ namespace Features.MixMinigame
     {
         [SerializeField] private MixMinigameSequenceScriptableObject sequenceScriptableObject;
         
-        [Inject] private ITimeSystem _timeSystem; 
+        [Inject] private ITimeSystem             _timeSystem;
         [Inject] private ITransientTimeCollector _timeCollector;
 
         private float _timer;
