@@ -13,8 +13,8 @@ namespace Features.InputDispatching
         
         private GameObject _heldGameObject;
         
-        public Action<GameObject>       OnClickedGameObjectAction;
-        public Action<GameObject, bool> OnHeldGameObjectAction;
+        public event Action<GameObject>       OnClickedGameObjectAction;
+        public event Action<GameObject, bool> OnHeldGameObjectAction;
         
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]

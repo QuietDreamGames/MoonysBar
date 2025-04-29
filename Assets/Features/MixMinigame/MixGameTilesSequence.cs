@@ -1,15 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Features.MixMinigame.SequenceElements;
+using Features.MixMinigame.Datas;
 using UnityEngine;
 
 namespace Features.MixMinigame
 {
     public class MixGameTilesSequence
     {
-        private readonly MixGameSequenceElement[] _sequenceElements;
-        public MixGameSequenceElement[] SequenceElements => _sequenceElements;
+        private readonly MixGameSequenceElementData[] _sequenceElements;
+        public MixGameSequenceElementData[] SequenceElements => _sequenceElements;
         
         public MixGameTilesSequence(string rawSequenceText)
         {
@@ -22,10 +22,10 @@ namespace Features.MixMinigame
         // raw sequence text format:
         // visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
         // positions are relative to center, and relative in percentage, from -100 to 100 
-        public static MixGameSequenceElement[] Parse(string rawSequenceText)
+        public static MixGameSequenceElementData[] Parse(string rawSequenceText)
         {
             var lines = rawSequenceText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var elements = new List<MixGameSequenceElement>();
+            var elements = new List<MixGameSequenceElementData>();
 
             foreach (var line in lines)
             {
@@ -41,7 +41,7 @@ namespace Features.MixMinigame
                 if (parts.Length == 4) // Clickable
                 {
                     var initialPosition = new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100);
-                    elements.Add(new MixGameClickableSequenceElement(visualNumber, appearTiming, initialPosition));
+                    elements.Add(new MixGameClickableSequenceElementData(visualNumber, appearTiming, initialPosition));
                     continue;
                 }
 
@@ -60,7 +60,7 @@ namespace Features.MixMinigame
                 }
 
                 elements.Add(
-                    new MixGameMovableSequenceElement(
+                    new MixGameMovableSequenceElementData(
                         visualNumber,
                         appearTiming,
                         new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100),

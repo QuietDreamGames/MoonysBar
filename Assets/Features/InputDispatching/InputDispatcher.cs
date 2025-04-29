@@ -6,8 +6,8 @@ namespace Features.InputDispatching
 {
     public class InputDispatcher : MonoBehaviour
     {
-        public Action<InputAction.CallbackContext>       OnClickAction;
-        public Action<InputAction.CallbackContext, bool> OnHoldClickAction;
+        public event Action<InputAction.CallbackContext>       OnClickAction;
+        public event Action<InputAction.CallbackContext, bool> OnHoldClickAction;
         
         public void OnClick(InputAction.CallbackContext context)
         {
