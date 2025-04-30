@@ -43,7 +43,7 @@ namespace Features.MixMinigame.Factories
             _movablePool   = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
         }
 
-        public MixGameTileViewModel GetTileViewModel(MixGameSequenceElementData data, Transform parent)
+        public (MixGameTileView, MixGameTileViewModel) GetTile(MixGameSequenceElementData data, Transform parent)
         {
             MixGameTileModel tileModel = data switch
             {
@@ -59,14 +59,20 @@ namespace Features.MixMinigame.Factories
                 _                                                 => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
             
-            var view = data switch
+
+            var (pool, prefab) = data switch
             {
-                MixGameClickableSequenceElementData clickableData => _clickablePool.Spawn(clickablePrefab, parent),
-                MixGameMovableSequenceElementData   movableData   => _movablePool.Spawn(movablePrefab, parent),
+                MixGameClickableSequenceElementData clickableData => (_clickablePool, clickablePrefab),
+                MixGameMovableSequenceElementData   movableData   => (_movablePool, movablePrefab),
                 _                                                 => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
 
-            return tileViewModel;
+            var tileView = pool.Spawn(prefab, parent);
+            
+            tileView.Initialize(tileViewModel);
+            tileView.OnReturnToPool += () => pool.Despawn(prefab, tileView);
+
+            return (tileView, tileViewModel);
         }
         
     }

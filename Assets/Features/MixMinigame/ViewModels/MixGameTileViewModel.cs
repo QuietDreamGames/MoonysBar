@@ -1,10 +1,9 @@
 using System;
 using Features.MixMinigame.Models;
-using Features.TimeSystem.Interfaces.Handlers;
 
 namespace Features.MixMinigame.ViewModels
 {
-    public abstract class MixGameTileViewModel : IUpdateHandler
+    public abstract class MixGameTileViewModel : IDisposable
     {
         public MixGameTileModel TileModel { get; }
 
@@ -20,10 +19,12 @@ namespace Features.MixMinigame.ViewModels
         }
 
         public abstract void HandleInteraction(bool isHeld = false);
-        
-        public virtual void OnUpdate(float deltaTime)
+
+        public void Dispose()
         {
-            
+            OnHit = null;
+            OnMiss = null;
+            OnFail = null;
         }
     }
 }

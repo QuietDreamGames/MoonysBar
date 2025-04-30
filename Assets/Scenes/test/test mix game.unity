@@ -168,6 +168,8 @@ MonoBehaviour:
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 1835772186}
+  - {fileID: 1357065878}
+  mixGameTileFactory: {fileID: 1357065879}
 --- !u!1 &613908874
 GameObject:
   m_ObjectHideFlags: 0
@@ -526,6 +528,52 @@ Transform:
   - {fileID: 267725767}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1357065878
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1357065880}
+  - component: {fileID: 1357065879}
+  m_Layer: 0
+  m_Name: MixGameTileFactory
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1357065879
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357065878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 913266f8e0054e9a93c28913a7da441a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  clickablePrefab: {fileID: 7152419997229027810, guid: 8cfa08b579e8c204fb9d1cd02a26d516, type: 3}
+  movablePrefab: {fileID: 0}
+--- !u!4 &1357065880
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1357065878}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1835772186
 GameObject:
   m_ObjectHideFlags: 0
@@ -637,4 +685,5 @@ SceneRoots:
   - {fileID: 763696626}
   - {fileID: 1999325580}
   - {fileID: 613908875}
+  - {fileID: 1357065880}
   - {fileID: 783156610}

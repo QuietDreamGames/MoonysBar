@@ -1,3 +1,5 @@
+using System;
+using Features.MixMinigame.ViewModels;
 using Features.TimeSystem.Interfaces.Handlers;
 using UnityEngine;
 
@@ -5,16 +7,35 @@ namespace Features.MixMinigame.Views
 {
     public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
     {
-        public void Appear()
+        [SerializeField] protected Animator animator;
+        
+        public abstract void AnimateSuccessfulHit();
+        public abstract void AnimateMissedHit();
+        public abstract void AnimateTimeRunOut();
+
+        public event Action OnReturnToPool;
+
+        public virtual void Initialize(MixGameTileViewModel tileViewModel)
         {
-            gameObject.SetActive(true);
+            tileViewModel.OnHit += AnimateSuccessfulHit;
+            tileViewModel.OnMiss += AnimateMissedHit;
+            tileViewModel.OnFail += AnimateTimeRunOut;
+
+            transform.localPosition = tileViewModel.TileModel.Data.InitialPosition;
         }
-        
-        public abstract void AnimateFailure();
-        
+
         public virtual void OnUpdate(float deltaTime)
         {
+            animator.Update(deltaTime);
+        }
+
+        public virtual void ReturnToPool()
+        {
+            animator.Rebind();
+            animator.Update(0);
             
+            OnReturnToPool?.Invoke();
+            OnReturnToPool = null;
         }
     }
 }
