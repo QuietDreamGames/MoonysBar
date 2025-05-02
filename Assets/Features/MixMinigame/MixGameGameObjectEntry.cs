@@ -15,10 +15,10 @@ namespace Features.MixMinigame
     {
         [SerializeField] private MixMinigameSequenceScriptableObject sequenceScriptableObject;
         
-        [Inject] private ITimeSystem             _timeSystem;
-        [Inject] private ITransientTimeCollector _timeCollector;
+        [Inject] private readonly ITimeSystem             _timeSystem;
+        [Inject] private readonly ITransientTimeCollector _timeCollector;
         
-        [Inject] private MixGameTileFactory _tileFactory;
+        [Inject] private readonly MixGameTileFactory _tileFactory;
         
         private MixGameTilesSequence _sequence;
         
@@ -78,11 +78,12 @@ namespace Features.MixMinigame
             for (int i = 0; i < _tileList.Count; i++)
             {
                 var tileView = _tileList[i].Item1;
-                tileView.OnUpdate(deltaTime);
+                if (!tileView.gameObject.activeInHierarchy) continue;
+                    tileView.OnUpdate(deltaTime);
             }
 
-            if (_sequence.SequenceElements[_currentIndex].AppearTiming < _timer) return;
             if (_currentIndex >= _sequence.SequenceElements.Length) return;
+            if (_sequence.SequenceElements[_currentIndex].AppearTiming > _timer) return;
             
             var sequenceElement = _sequence.SequenceElements[_currentIndex];
             var tile = _tileFactory.GetTile(sequenceElement, transform);

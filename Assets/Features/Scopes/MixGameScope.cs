@@ -12,6 +12,7 @@ namespace Features.Scopes
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterComponent(mixGameTileFactory);
+            builder.Register<MixGamePlayingFieldService>(Lifetime.Scoped);
             builder.RegisterEntryPoint<MixGameEntryPoint>();
         }
         

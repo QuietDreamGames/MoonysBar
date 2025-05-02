@@ -2,11 +2,14 @@ using System;
 using Features.MixMinigame.ViewModels;
 using Features.TimeSystem.Interfaces.Handlers;
 using UnityEngine;
+using VContainer;
 
 namespace Features.MixMinigame.Views
 {
     public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
     {
+        [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
+        
         [SerializeField] protected Animator animator;
         
         public abstract void AnimateSuccessfulHit();
@@ -21,7 +24,8 @@ namespace Features.MixMinigame.Views
             tileViewModel.OnMiss += AnimateMissedHit;
             tileViewModel.OnFail += AnimateTimeRunOut;
 
-            transform.localPosition = tileViewModel.TileModel.Data.InitialPosition;
+            transform.localPosition = MixGamePlayingFieldService.ConvertRelativeTilePositionToAbsolute(
+                tileViewModel.TileModel.Data.InitialPosition);
         }
 
         public virtual void OnUpdate(float deltaTime)

@@ -12,17 +12,17 @@ namespace Features.TimeSystem.Core.Injected
         public Action OnFixedUpdate { get; set; }
         public Action OnLateUpdate  { get; set; }
         
-        public void Tick()
+        void ITickable.Tick()
         {
             OnUpdate?.Invoke();
         }
 
-        public void FixedTick()
+        void IFixedTickable.FixedTick()
         {
             OnFixedUpdate?.Invoke();
         }
 
-        public void LateTick()
+        void ILateTickable.LateTick()
         {
             OnLateUpdate?.Invoke();
         }
