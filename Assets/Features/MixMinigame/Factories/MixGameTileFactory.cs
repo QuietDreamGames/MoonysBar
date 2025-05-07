@@ -14,14 +14,14 @@ namespace Features.MixMinigame.Factories
     {
         [SerializeField] private GameObject clickablePrefab;
         [SerializeField] private GameObject movablePrefab;
-        
+
         [Inject] private IObjectResolver _objectResolver;
-        
+
         private GameObjectPool<MixGameTileView> _clickablePool;
         private GameObjectPool<MixGameTileView> _movablePool;
-        
+
         private const float ForgivenessWindow = 0.5f;
-        
+
         private void OnValidate()
         {
             if (clickablePrefab != null && clickablePrefab.GetComponent<MixGameTileClickableView>() == null)
@@ -36,7 +36,7 @@ namespace Features.MixMinigame.Factories
                 movablePrefab = null;
             }
         }
-        
+
         private void Awake()
         {
             _clickablePool = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
@@ -47,33 +47,34 @@ namespace Features.MixMinigame.Factories
         {
             MixGameTileModel tileModel = data switch
             {
-                MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(clickableData, ForgivenessWindow),
-                MixGameMovableSequenceElementData   movableData   => new MixGameTileMovableModel(movableData, ForgivenessWindow),
-                _                                                 => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(clickableData,
+                    ForgivenessWindow),
+                MixGameMovableSequenceElementData movableData => new MixGameTileMovableModel(movableData,
+                    ForgivenessWindow),
+                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
-            
+
             MixGameTileViewModel tileViewModel = data switch
             {
                 MixGameClickableSequenceElementData clickableData => new MixGameTileClickableViewModel(tileModel),
-                MixGameMovableSequenceElementData   movableData   => new MixGameTileMovableViewModel(tileModel),
-                _                                                 => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameMovableSequenceElementData movableData => new MixGameTileMovableViewModel(tileModel),
+                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
-            
+
 
             var (pool, prefab) = data switch
             {
                 MixGameClickableSequenceElementData clickableData => (_clickablePool, clickablePrefab),
-                MixGameMovableSequenceElementData   movableData   => (_movablePool, movablePrefab),
-                _                                                 => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameMovableSequenceElementData movableData => (_movablePool, movablePrefab),
+                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
 
             var tileView = pool.Spawn(prefab, parent);
-            
+
             tileView.Initialize(tileViewModel);
             tileView.OnReturnToPool += () => pool.Despawn(prefab, tileView);
 
             return (tileView, tileViewModel);
         }
-        
     }
 }

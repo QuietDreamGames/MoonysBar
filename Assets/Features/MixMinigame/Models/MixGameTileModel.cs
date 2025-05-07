@@ -14,7 +14,7 @@ namespace Features.MixMinigame.Models
             Data              = data;
             ForgivenessWindow = forgivenessWindow;
         }
-        
+
         public bool IsInForgivenessWindow(float time)
         {
             return time >= Data.AppearTiming - ForgivenessWindow && time <= Data.AppearTiming + ForgivenessWindow;

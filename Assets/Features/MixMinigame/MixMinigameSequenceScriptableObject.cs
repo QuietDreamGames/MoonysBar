@@ -7,9 +7,9 @@ namespace Features.MixMinigame
     {
         [SerializeField] private TextAsset sequenceFile;
         [SerializeField] private string    soundtrackName;
-        
+
         public string SoundtrackName => soundtrackName;
-        
+
         public MixGameTilesSequence GetSequence()
         {
             if (sequenceFile == null)
@@ -20,6 +20,5 @@ namespace Features.MixMinigame
 
             return new MixGameTilesSequence(sequenceFile.text);
         }
-
     }
 }

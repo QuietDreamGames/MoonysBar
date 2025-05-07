@@ -8,16 +8,16 @@ namespace Features.InputDispatching
     {
         public event Action<InputAction.CallbackContext>       OnClickAction;
         public event Action<InputAction.CallbackContext, bool> OnHoldClickAction;
-        
+
         public void OnClick(InputAction.CallbackContext context)
         {
             if (!context.performed) return;
-            
+
             OnClickAction?.Invoke(context);
             Debug.Log("Click performed");
         }
-        
-        public void OnClickHold(InputAction.CallbackContext context) 
+
+        public void OnClickHold(InputAction.CallbackContext context)
         {
             if (context.performed) return;
             if (context.started)

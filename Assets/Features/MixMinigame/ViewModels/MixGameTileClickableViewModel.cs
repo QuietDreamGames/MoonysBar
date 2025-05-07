@@ -6,12 +6,10 @@ namespace Features.MixMinigame.ViewModels
     {
         public MixGameTileClickableViewModel(MixGameTileModel tileModel) : base(tileModel)
         {
-            
         }
 
         public override void HandleInteraction(bool isHeld = false)
         {
-            
         }
     }
 }

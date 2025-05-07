@@ -9,7 +9,7 @@ namespace Features.InputDispatching
     {
         public event Action<InputAction.CallbackContext>       OnClickAction;
         public event Action<InputAction.CallbackContext, bool> OnHoldClickAction;
-        
+
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InputService(InputDispatcher inputDispatcher)
@@ -22,7 +22,7 @@ namespace Features.InputDispatching
         {
             OnClickAction?.Invoke(context);
         }
-        
+
         private void OnHoldClick(InputAction.CallbackContext context, bool isStarted)
         {
             OnHoldClickAction?.Invoke(context, isStarted);

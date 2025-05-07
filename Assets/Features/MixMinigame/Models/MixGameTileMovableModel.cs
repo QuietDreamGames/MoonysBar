@@ -12,7 +12,7 @@ namespace Features.MixMinigame.Models
         public bool IsFinishedInForgivenessWindow(float time)
         {
             if (Data is not MixGameMovableSequenceElementData movableData) return false;
-            
+
             return time >= Data.AppearTiming + movableData.MoveDuration - ForgivenessWindow &&
                    time <= Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
         }

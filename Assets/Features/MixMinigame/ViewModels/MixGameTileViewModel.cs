@@ -12,7 +12,7 @@ namespace Features.MixMinigame.ViewModels
         public event Action OnFail;
 
         protected bool IsProcessed;
-        
+
         public MixGameTileViewModel(MixGameTileModel tileModel)
         {
             TileModel = tileModel;
@@ -22,7 +22,7 @@ namespace Features.MixMinigame.ViewModels
 
         public void Dispose()
         {
-            OnHit = null;
+            OnHit  = null;
             OnMiss = null;
             OnFail = null;
         }

@@ -1,4 +1,3 @@
-
 using Features.MixMinigame.Models;
 
 namespace Features.MixMinigame.ViewModels
@@ -11,7 +10,6 @@ namespace Features.MixMinigame.ViewModels
 
         public override void HandleInteraction(bool isHeld = false)
         {
-            
         }
     }
 }

@@ -6,12 +6,12 @@ namespace Features.GameStateMachine.States
     public abstract class EndState : IState
     {
         private readonly IEndableSystemHandler[] _endableSystemHandlers;
-        
-        public EndState(IEndableSystemHandler[] endableSystemHandlers) 
+
+        public EndState(IEndableSystemHandler[] endableSystemHandlers)
         {
             _endableSystemHandlers = endableSystemHandlers;
         }
-        
+
         public virtual void Enter()
         {
             foreach (var endableSystemHandler in _endableSystemHandlers)

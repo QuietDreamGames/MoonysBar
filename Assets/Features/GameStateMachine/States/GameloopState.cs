@@ -15,7 +15,7 @@ namespace Features.GameStateMachine.States
         public void Enter()
         {
             // TODO: gameplay time system must be unpaused here
-            
+
             foreach (var pausableSystemHandler in _pausableSystemHandlers)
             {
                 pausableSystemHandler.Resume();

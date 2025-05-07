@@ -9,9 +9,9 @@ namespace Features.MixMinigame.Views
     public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
     {
         [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
-        
+
         [SerializeField] protected Animator animator;
-        
+
         public abstract void AnimateSuccessfulHit();
         public abstract void AnimateMissedHit();
         public abstract void AnimateTimeRunOut();
@@ -20,7 +20,7 @@ namespace Features.MixMinigame.Views
 
         public virtual void Initialize(MixGameTileViewModel tileViewModel)
         {
-            tileViewModel.OnHit += AnimateSuccessfulHit;
+            tileViewModel.OnHit  += AnimateSuccessfulHit;
             tileViewModel.OnMiss += AnimateMissedHit;
             tileViewModel.OnFail += AnimateTimeRunOut;
 
@@ -37,7 +37,7 @@ namespace Features.MixMinigame.Views
         {
             animator.Rebind();
             animator.Update(0);
-            
+
             OnReturnToPool?.Invoke();
             OnReturnToPool = null;
         }
