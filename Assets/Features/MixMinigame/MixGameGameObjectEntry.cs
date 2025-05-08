@@ -1,7 +1,4 @@
-using System.Collections.Generic;
 using Features.MixMinigame.Factories;
-using Features.MixMinigame.ViewModels;
-using Features.MixMinigame.Views;
 using Features.TimeSystem.Interfaces;
 using Features.TimeSystem.Interfaces.Handlers;
 using Features.TimeSystem.Interfaces.Injected;
@@ -14,16 +11,15 @@ namespace Features.MixMinigame
     {
         [SerializeField] private MixMinigameSequenceScriptableObject sequenceScriptableObject;
 
-        [Inject] private readonly MixGameTileFactory      _tileFactory;
-        [Inject] private readonly ITransientTimeCollector _timeCollector;
+        [Inject] private readonly MixGameTileFactory           _tileFactory;
+        [Inject] private readonly MixGameTilesHolderAndUpdater _tilesHolderAndUpdater;
+        [Inject] private readonly ITransientTimeCollector      _timeCollector;
 
         [Inject] private readonly ITimeSystem _timeSystem;
 
         private int _currentIndex;
 
         private MixGameTilesSequence _sequence;
-
-        private List<(MixGameTileView, MixGameTileViewModel)> _tileList;
 
         private float _timer;
 
@@ -55,40 +51,26 @@ namespace Features.MixMinigame
 
 
             _currentIndex = 0;
-
-            _tileList = new List<(MixGameTileView, MixGameTileViewModel)>();
         }
 
         private void OnDestroy()
         {
             _timeSystem.Unsubscribe(_timeCollector);
-            for (var i = 0; i < _tileList.Count; i++)
-            {
-                if (_tileList[i].Item1 != null)
-                    _tileList[i].Item1.ReturnToPool();
-                _tileList[i].Item2.Dispose();
-            }
-
-            _tileList.Clear();
+            _tilesHolderAndUpdater.Dispose();
         }
 
         public void OnUpdate(float deltaTime)
         {
             _timer += deltaTime;
 
-            for (var i = 0; i < _tileList.Count; i++)
-            {
-                var tileView = _tileList[i].Item1;
-                if (!tileView.gameObject.activeInHierarchy) continue;
-                tileView.OnUpdate(deltaTime);
-            }
+            _tilesHolderAndUpdater.OnUpdate(deltaTime);
 
             if (_currentIndex >= _sequence.SequenceElements.Length) return;
             if (_sequence.SequenceElements[_currentIndex].AppearTiming > _timer) return;
 
             var sequenceElement = _sequence.SequenceElements[_currentIndex];
             var tile            = _tileFactory.GetTile(sequenceElement, transform);
-            _tileList.Add(tile);
+            _tilesHolderAndUpdater.AddTile(tile.Item1, tile.Item2, tile.Item3);
 
             _currentIndex++;
         }

@@ -1,3 +1,4 @@
+using System;
 using Features.MixMinigame.Datas;
 
 namespace Features.MixMinigame.Models
@@ -7,14 +8,21 @@ namespace Features.MixMinigame.Models
         public MixGameTileMovableModel(MixGameSequenceElementData data, float forgivenessWindow)
             : base(data, forgivenessWindow)
         {
+            if (data is not MixGameMovableSequenceElementData)
+                throw new ArgumentException("Data must be of type MixGameMovableSequenceElementData");
         }
 
-        public bool IsFinishedInForgivenessWindow(float time)
+        public bool IsReleasedInForgivenessWindow(float levelTimerValue)
         {
-            if (Data is not MixGameMovableSequenceElementData movableData) return false;
+            var movableData = (MixGameMovableSequenceElementData)Data;
+            return levelTimerValue >= Data.AppearTiming + movableData.MoveDuration - ForgivenessWindow &&
+                   levelTimerValue <= Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
+        }
 
-            return time >= Data.AppearTiming + movableData.MoveDuration - ForgivenessWindow &&
-                   time <= Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
+        public bool IsMissedFinish(float levelTimerValue)
+        {
+            var movableData = (MixGameMovableSequenceElementData)Data;
+            return levelTimerValue > Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
         }
     }
 }

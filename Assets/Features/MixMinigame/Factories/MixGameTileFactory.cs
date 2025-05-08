@@ -12,15 +12,20 @@ namespace Features.MixMinigame.Factories
 {
     public class MixGameTileFactory : MonoBehaviour
     {
+        private const            float      ForgivenessWindow = 0.5f;
         [SerializeField] private GameObject clickablePrefab;
         [SerializeField] private GameObject movablePrefab;
-
-        [Inject] private IObjectResolver _objectResolver;
 
         private GameObjectPool<MixGameTileView> _clickablePool;
         private GameObjectPool<MixGameTileView> _movablePool;
 
-        private const float ForgivenessWindow = 0.5f;
+        [Inject] private IObjectResolver _objectResolver;
+
+        private void Awake()
+        {
+            _clickablePool = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
+            _movablePool   = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
+        }
 
         private void OnValidate()
         {
@@ -37,13 +42,8 @@ namespace Features.MixMinigame.Factories
             }
         }
 
-        private void Awake()
-        {
-            _clickablePool = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
-            _movablePool   = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
-        }
-
-        public (MixGameTileView, MixGameTileViewModel) GetTile(MixGameSequenceElementData data, Transform parent)
+        public (MixGameTileModel, MixGameTileView, MixGameTileViewModel) GetTile(
+            MixGameSequenceElementData data, Transform parent)
         {
             MixGameTileModel tileModel = data switch
             {
@@ -74,7 +74,7 @@ namespace Features.MixMinigame.Factories
             tileView.Initialize(tileViewModel);
             tileView.OnReturnToPool += () => pool.Despawn(prefab, tileView);
 
-            return (tileView, tileViewModel);
+            return (tileModel, tileView, tileViewModel);
         }
     }
 }

@@ -1,22 +1,30 @@
-using UnityEngine;
-
 namespace Features.MixMinigame.Views
 {
     public class MixGameTileMovableView : MixGameTileView
     {
-        public override void AnimateSuccessfulHit()
+        private bool _isMoving;
+
+        protected override void OnHit()
         {
-            Debug.LogError("not implemented");
+            if (!_isMoving)
+            {
+                _isMoving = true;
+                _         = PlayAnimationAndWaitAsync("Hit");
+            }
+            else
+            {
+                _ = PlayAnimationAndReturnToPoolAsync("HitReleased");
+            }
         }
 
-        public override void AnimateMissedHit()
+        protected override void OnMiss()
         {
-            Debug.LogError("not implemented");
+            _ = PlayAnimationAndReturnToPoolAsync("Miss");
         }
 
-        public override void AnimateTimeRunOut()
+        protected override void OnFail()
         {
-            Debug.LogError("not implemented");
+            _ = PlayAnimationAndReturnToPoolAsync("Fail");
         }
     }
 }

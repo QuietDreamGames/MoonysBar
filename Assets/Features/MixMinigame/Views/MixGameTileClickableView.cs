@@ -1,22 +1,20 @@
-using UnityEngine;
-
 namespace Features.MixMinigame.Views
 {
     public class MixGameTileClickableView : MixGameTileView
     {
-        public override void AnimateSuccessfulHit()
+        protected override void OnHit()
         {
-            Debug.LogError("not implemented");
+            _ = PlayAnimationAndReturnToPoolAsync("Hit");
         }
 
-        public override void AnimateMissedHit()
+        protected override void OnMiss()
         {
-            Debug.LogError("not implemented");
+            _ = PlayAnimationAndReturnToPoolAsync("Miss");
         }
 
-        public override void AnimateTimeRunOut()
+        protected override void OnFail()
         {
-            Debug.LogError("not implemented");
+            _ = PlayAnimationAndReturnToPoolAsync("Fail");
         }
     }
 }

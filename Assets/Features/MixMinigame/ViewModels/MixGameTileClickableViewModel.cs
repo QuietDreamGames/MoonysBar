@@ -8,8 +8,21 @@ namespace Features.MixMinigame.ViewModels
         {
         }
 
-        public override void HandleInteraction(bool isHeld = false)
+        public override void CheckForMiss(float levelTimerValue)
         {
+            if (IsProcessed) return;
+
+            if (TileModel.IsMissedStart(levelTimerValue))
+            {
+                IsProcessed = true;
+                TriggerMiss();
+            }
+        }
+
+        public override void HandleInteraction(float levelTimerValue, bool isHeld = false)
+        {
+            IsProcessed = true;
+            TriggerHit();
         }
     }
 }

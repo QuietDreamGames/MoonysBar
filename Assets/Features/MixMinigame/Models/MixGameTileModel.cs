@@ -4,20 +4,25 @@ namespace Features.MixMinigame.Models
 {
     public abstract class MixGameTileModel
     {
-        public MixGameSequenceElementData Data { get; }
-
-        public float ForgivenessWindow { get; }
-
-
         public MixGameTileModel(MixGameSequenceElementData data, float forgivenessWindow)
         {
             Data              = data;
             ForgivenessWindow = forgivenessWindow;
         }
 
-        public bool IsInForgivenessWindow(float time)
+        public MixGameSequenceElementData Data { get; }
+
+        public float ForgivenessWindow { get; }
+
+        public bool IsHitInForgivenessWindow(float levelTimerValue)
         {
-            return time >= Data.AppearTiming - ForgivenessWindow && time <= Data.AppearTiming + ForgivenessWindow;
+            return levelTimerValue >= Data.AppearTiming - ForgivenessWindow
+                   && levelTimerValue <= Data.AppearTiming + ForgivenessWindow;
+        }
+
+        public bool IsMissedStart(float levelTimerValue)
+        {
+            return levelTimerValue > Data.AppearTiming + ForgivenessWindow;
         }
     }
 }
