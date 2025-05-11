@@ -12,7 +12,10 @@ namespace Features.MixMinigame.Factories
 {
     public class MixGameTileFactory : MonoBehaviour
     {
-        private const            float      ForgivenessWindow = 0.5f;
+        private const float HitTiming         = 1f;
+        private const float ForgivenessWindow = 0.5f;
+
+
         [SerializeField] private GameObject clickablePrefab;
         [SerializeField] private GameObject movablePrefab;
 
@@ -48,8 +51,10 @@ namespace Features.MixMinigame.Factories
             MixGameTileModel tileModel = data switch
             {
                 MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(clickableData,
+                    HitTiming,
                     ForgivenessWindow),
                 MixGameMovableSequenceElementData movableData => new MixGameTileMovableModel(movableData,
+                    HitTiming,
                     ForgivenessWindow),
                 _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };

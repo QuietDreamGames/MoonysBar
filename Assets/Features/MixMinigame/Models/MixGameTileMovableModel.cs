@@ -5,8 +5,8 @@ namespace Features.MixMinigame.Models
 {
     public class MixGameTileMovableModel : MixGameTileModel
     {
-        public MixGameTileMovableModel(MixGameSequenceElementData data, float forgivenessWindow)
-            : base(data, forgivenessWindow)
+        public MixGameTileMovableModel(MixGameSequenceElementData data, float hitTiming, float forgivenessWindow)
+            : base(data, hitTiming, forgivenessWindow)
         {
             if (data is not MixGameMovableSequenceElementData)
                 throw new ArgumentException("Data must be of type MixGameMovableSequenceElementData");
