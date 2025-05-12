@@ -25,8 +25,6 @@ namespace Features.MixMinigame.Views
             _hitTiming           = tileViewModel.TileModel.HitTiming;
 
             _ = PlayAnimationAndWaitAsync("Shrink", 1);
-            Debug.Log(_initialBaseScale);
-            // Debug.Log(_initialDynamicScale);
         }
 
         protected override void OnHit()

@@ -8,13 +8,12 @@ namespace Features.MixMinigame
 {
     public class MixGameTilesSequence
     {
-        private readonly MixGameSequenceElementData[] _sequenceElements;
-        public           MixGameSequenceElementData[] SequenceElements => _sequenceElements;
-
         public MixGameTilesSequence(string rawSequenceText)
         {
-            _sequenceElements = MixGameParser.Parse(rawSequenceText);
+            SequenceElements = MixGameParser.Parse(rawSequenceText);
         }
+
+        public MixGameSequenceElementData[] SequenceElements { get; }
     }
 
     internal static class MixGameParser
@@ -46,27 +45,17 @@ namespace Features.MixMinigame
                 }
 
                 if (!float.TryParse(parts[4], out var moveDuration)) continue;
-                if (!float.TryParse(parts[5], out var finalRelativePositionX)) continue;
-                if (!float.TryParse(parts[6], out var finalRelativePositionY)) continue;
-
-                var finalPosition = new Vector2(finalRelativePositionX / 100, finalRelativePositionY / 100);
-                var movePath      = new Vector2[(parts.Length - 7) / 2];
-
-                for (var i = 0; i < movePath.Length; i++)
-                {
-                    if (!float.TryParse(parts[7 + i * 2], out var pathX)) continue;
-                    if (!float.TryParse(parts[8 + i * 2], out var pathY)) continue;
-                    movePath[i] = new Vector2(pathX / 100, pathY / 100);
-                }
+                if (!float.TryParse(parts[5], out var rotationZ)) continue;
+                if (!int.TryParse(parts[6], out var tileType)) continue;
 
                 elements.Add(
                     new MixGameMovableSequenceElementData(
                         visualNumber,
                         appearTiming,
                         new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100),
-                        finalPosition,
+                        rotationZ,
                         moveDuration,
-                        movePath
+                        tileType
                     )
                 );
             }

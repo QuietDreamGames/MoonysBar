@@ -1,4 +1,4 @@
-# visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
+# visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ; optional - for movables - moveDuration(float) rotationZ(float, euler angles) tileType(int)
 # positions are relative to center, and relative in percentage, from -100 to 100 
 
 1 1 0 0
@@ -11,3 +11,5 @@
 8 8 -40 0
 9 9 -40 40
 10 10 0 0
+
+1 11 40 40 3 270 0
