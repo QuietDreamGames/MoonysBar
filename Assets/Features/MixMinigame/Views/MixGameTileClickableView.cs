@@ -25,6 +25,8 @@ namespace Features.MixMinigame.Views
             _hitTiming           = tileViewModel.TileModel.HitTiming;
 
             _ = PlayAnimationAndWaitAsync("Shrink", 1);
+            Debug.Log(_initialBaseScale);
+            // Debug.Log(_initialDynamicScale);
         }
 
         protected override void OnHit()
@@ -63,32 +65,39 @@ namespace Features.MixMinigame.Views
             return tween.WithCancellation(ct);
         }
 
+        public override void ReturnToPool()
+        {
+            base.ReturnToPool();
+            transform.localScale                           = _initialBaseScale;
+            dynamicViewSpriteRenderer.transform.localScale = _initialDynamicScale;
+        }
+
         private Tween HitTween()
         {
             var tween = transform.DOScale(_initialBaseScale * 1.2f, 0.5f)
-                                 .From(_initialBaseScale);
+                .From(_initialBaseScale);
             return tween;
         }
 
         private Tween MissTween()
         {
             var tween = transform.DOScale(_initialBaseScale * 0.8f, 0.5f)
-                                 .From(_initialBaseScale);
+                .From(_initialBaseScale);
             return tween;
         }
 
         private Tween FailTween()
         {
             var tween = transform.DOScale(_initialBaseScale * 0.5f, 0.5f)
-                                 .From(_initialBaseScale);
+                .From(_initialBaseScale);
             return tween;
         }
 
         private Tween ShrinkTween()
         {
             var tween = dynamicViewSpriteRenderer
-                        .transform.DOScale(_initialDynamicScale, _hitTiming)
-                        .From(_initialDynamicScale * 3);
+                .transform.DOScale(_initialDynamicScale, _hitTiming)
+                .From(_initialDynamicScale * 3);
             return tween;
         }
     }

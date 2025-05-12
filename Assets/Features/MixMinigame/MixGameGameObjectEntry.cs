@@ -9,7 +9,8 @@ namespace Features.MixMinigame
 {
     public class MixGameGameObjectEntry : MonoBehaviour, IUpdateHandler
     {
-        [SerializeField] private MixMinigameSequenceScriptableObject sequenceScriptableObject;
+        [SerializeField] private          MixMinigameSequenceScriptableObject sequenceScriptableObject;
+        [Inject]         private readonly MixGameLevelTimerHolder             _levelTimerHolder;
 
         [Inject] private readonly MixGameTileFactory           _tileFactory;
         [Inject] private readonly MixGameTilesHolderAndUpdater _tilesHolderAndUpdater;
@@ -64,6 +65,8 @@ namespace Features.MixMinigame
             _timer += deltaTime;
 
             _tilesHolderAndUpdater.OnUpdate(deltaTime);
+            _levelTimerHolder.OnUpdate(deltaTime);
+
 
             if (_currentIndex >= _sequence.SequenceElements.Length) return;
             if (_sequence.SequenceElements[_currentIndex].AppearTiming > _timer) return;
@@ -71,6 +74,7 @@ namespace Features.MixMinigame
             var sequenceElement = _sequence.SequenceElements[_currentIndex];
             var tile            = _tileFactory.GetTile(sequenceElement, transform);
             _tilesHolderAndUpdater.AddTile(tile.Item1, tile.Item2, tile.Item3);
+
 
             _currentIndex++;
         }

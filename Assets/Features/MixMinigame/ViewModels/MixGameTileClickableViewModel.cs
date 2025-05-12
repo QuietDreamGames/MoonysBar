@@ -12,17 +12,22 @@ namespace Features.MixMinigame.ViewModels
         {
             if (IsProcessed) return;
 
-            if (TileModel.IsMissedStart(levelTimerValue))
-            {
-                IsProcessed = true;
-                TriggerMiss();
-            }
+            if (!TileModel.IsMissedStart(levelTimerValue)) return;
+
+            IsProcessed = true;
+            TriggerMiss();
         }
 
         public override void HandleInteraction(float levelTimerValue, bool isHeld = false)
         {
+            if (IsProcessed) return;
+
             IsProcessed = true;
-            TriggerHit();
+
+            if (TileModel.IsHitInForgivenessWindow(levelTimerValue))
+                TriggerHit();
+            else
+                TriggerFail();
         }
     }
 }

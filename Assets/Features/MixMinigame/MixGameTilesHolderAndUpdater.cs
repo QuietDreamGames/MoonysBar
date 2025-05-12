@@ -39,16 +39,18 @@ namespace Features.MixMinigame
         {
             for (var i = 0; i < _tiles.Count; i++)
             {
-                var tileView = _tiles[i].Item2;
-                if (!tileView.gameObject.activeInHierarchy) continue;
-                tileView.OnUpdate(deltaTime);
-                _tiles[i].Item3.CheckForMiss(_timerHolder.Timer);
+                var tile = _tiles[i];
+                if (!tile.Item2.gameObject.activeInHierarchy) continue;
+                tile.Item2.OnUpdate(deltaTime);
+                if (_tiles.Contains(tile))
+                    tile.Item3.CheckForMiss(_timerHolder.Timer);
             }
         }
 
         public void AddTile(MixGameTileModel model, MixGameTileView view, MixGameTileViewModel viewModel)
         {
             _tiles.Add((model, view, viewModel));
+            view.OnReturnToPool += () => RemoveTileByView(view);
         }
 
         public List<(MixGameTileModel, MixGameTileView, MixGameTileViewModel)> GetTiles()

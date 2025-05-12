@@ -24,7 +24,6 @@ namespace Features.MixMinigame.Views
             for (var i = 0; i < Tweens?.Count; i++)
             {
                 if (Tweens[i] == null) continue;
-                Tweens[i].SetUpdate(UpdateType.Manual);
                 Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
             }
         }
@@ -50,18 +49,20 @@ namespace Features.MixMinigame.Views
             OnReturnToPool?.Invoke();
             OnReturnToPool = null;
 
-            for (var i = Tweens.Count - 1; i >= 0; i--)
-                if (Tweens[i] != null && Tweens[i].active)
-                    Tweens[i].Kill();
-
-            Tweens?.Clear();
-
             for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
             {
                 var cts = _animationCtsWithLayers.Keys.ElementAt(i);
                 cts.Cancel();
                 cts.Dispose();
             }
+
+            _animationCtsWithLayers?.Clear();
+
+            for (var i = Tweens.Count - 1; i >= 0; i--)
+                if (Tweens[i] != null && Tweens[i].active)
+                    Tweens[i].Kill();
+
+            Tweens.Clear();
         }
 
         protected abstract void OnHit();
@@ -81,7 +82,6 @@ namespace Features.MixMinigame.Views
 
         protected async UniTask PlayAnimationAndReturnToPoolAsync(string animationName, int layer)
         {
-            CancelCurrentAnimationAwait(layer);
             await PlayAnimationAndWaitAsync(animationName, layer);
             ReturnToPool();
         }
@@ -91,13 +91,12 @@ namespace Features.MixMinigame.Views
             for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
             {
                 var cts = _animationCtsWithLayers.Keys.ElementAt(i);
-                if (_animationCtsWithLayers[cts] == layer)
-                {
-                    cts.Cancel();
-                    cts.Dispose();
-                    _animationCtsWithLayers.Remove(cts);
-                    break;
-                }
+                if (_animationCtsWithLayers[cts] != layer) continue;
+
+                cts.Cancel();
+                cts.Dispose();
+                _animationCtsWithLayers.Remove(cts);
+                break;
             }
         }
     }
