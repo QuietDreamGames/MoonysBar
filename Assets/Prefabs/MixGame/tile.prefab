@@ -130,7 +130,6 @@ GameObject:
   m_Component:
   - component: {fileID: 2407946303386623305}
   - component: {fileID: 8628708220425037443}
-  - component: {fileID: -5103880230497685683}
   m_Layer: 0
   m_Name: tile
   m_TagString: Untagged
@@ -152,6 +151,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 8721186978396920291}
+  - {fileID: 1209773907930237218}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &8628708220425037443
@@ -168,13 +168,60 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   staticViewSpriteRenderer: {fileID: 3222662261838608142}
   dynamicViewSpriteRenderer: {fileID: 3669019020046137068}
---- !u!58 &-5103880230497685683
+--- !u!1 &7251618656513312133
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1209773907930237218}
+  - component: {fileID: 2691793452036312424}
+  - component: {fileID: 5241902645035603459}
+  m_Layer: 0
+  m_Name: collider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1209773907930237218
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7251618656513312133}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 2407946303386623305}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &2691793452036312424
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7251618656513312133}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c5cb78e0ff814f6192ca7ab8a02ae305, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  pointerCollider: {fileID: 5241902645035603459}
+  isClickable: 1
+--- !u!58 &5241902645035603459
 CircleCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7152419997229027810}
+  m_GameObject: {fileID: 7251618656513312133}
   m_Enabled: 1
   serializedVersion: 3
   m_Density: 1

@@ -1,7 +1,7 @@
+using Features.Collision;
 using Features.InputDispatching;
 using Features.MixMinigame.Views;
 using JetBrains.Annotations;
-using UnityEngine;
 using VContainer;
 
 namespace Features.MixMinigame
@@ -14,38 +14,47 @@ namespace Features.MixMinigame
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public MixGamePointerCollisionService(
-            InputPointerGameObjectsCollisionService inputPointerGameObjectCollisionService,
-            MixGameTilesHolderAndUpdater            tilesHolderAndUpdater,
-            MixGameLevelTimerHolder                 levelTimerHolder)
+            InputPointerCollisionService inputPointerCollisionService,
+            MixGameTilesHolderAndUpdater tilesHolderAndUpdater,
+            MixGameLevelTimerHolder      levelTimerHolder)
         {
-            inputPointerGameObjectCollisionService.OnClickedGameObjectAction += OnGameObjectClicked;
-            inputPointerGameObjectCollisionService.OnHeldGameObjectAction    += OnGameObjectHeld;
+            inputPointerCollisionService.OnClickedPointerColliderAction += OnPointerColliderClicked;
+            inputPointerCollisionService.OnHeldPointerColliderAction    += OnPointerColliderHeld;
 
             _tilesHolderAndUpdater = tilesHolderAndUpdater;
             _levelTimerHolder      = levelTimerHolder;
         }
 
-        private void OnGameObjectClicked(GameObject gameObject)
+        private void OnPointerColliderClicked(PointerCollider pointerCollider)
         {
-            if (!gameObject.TryGetComponent(out MixGameTileClickableView mixGameTileClickableView)) return;
+            if (pointerCollider is not MixGamePointerCollider mixGamePointerCollider) return;
+            if (!mixGamePointerCollider.IsClickable) return;
+
+            var tileClickableView = pointerCollider.GetComponentInParent<MixGameTileClickableView>();
+
+            if (!tileClickableView) return;
 
             var tiles = _tilesHolderAndUpdater.GetTiles();
             for (var i = 0; i < tiles.Count; i++)
             {
-                if (tiles[i].Item2 != mixGameTileClickableView) continue;
+                if (tiles[i].Item2 != tileClickableView) continue;
                 tiles[i].Item3.HandleInteraction(_levelTimerHolder.Timer);
                 break;
             }
         }
 
-        private void OnGameObjectHeld(GameObject gameObject, bool isHeld)
+        private void OnPointerColliderHeld(PointerCollider pointerCollider, bool isHeld)
         {
-            if (!gameObject.TryGetComponent(out MixGameTileMovableView mixGameTileMovableView)) return;
+            if (pointerCollider is not MixGamePointerCollider mixGamePointerCollider) return;
+            if (mixGamePointerCollider.IsClickable) return;
+
+            var tileMovableView = pointerCollider.GetComponentInParent<MixGameTileMovableView>();
+            if (!tileMovableView) return;
 
             var tiles = _tilesHolderAndUpdater.GetTiles();
             for (var i = 0; i < tiles.Count; i++)
             {
-                if (tiles[i].Item2 != mixGameTileMovableView) continue;
+                if (tiles[i].Item2 != tileMovableView) continue;
                 tiles[i].Item3.HandleInteraction(_levelTimerHolder.Timer, isHeld);
                 break;
             }
