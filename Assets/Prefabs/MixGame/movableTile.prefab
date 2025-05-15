@@ -26,9 +26,9 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 264449277934257592}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.5, y: 0.5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 4333872182455515639}
@@ -45,7 +45,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c5cb78e0ff814f6192ca7ab8a02ae305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pointerCollider: {fileID: 0}
+  pointerCollider: {fileID: 5737498235781509365}
   isClickable: 0
 --- !u!58 &5737498235781509365
 CircleCollider2D:
@@ -82,7 +82,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 0.5
+  m_Radius: 1
 --- !u!1 &413865114064252350
 GameObject:
   m_ObjectHideFlags: 0
@@ -196,7 +196,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 13, y: 13, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 9221579359476399338}
@@ -251,6 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   viewRotationPivot: {fileID: 534824697439880460}
+  baseSpriteRenderer: {fileID: 334472601615067856}
   handleSpriteRenderer: {fileID: 6876508563962365933}
   timingDragCircleSpriteRenderer: {fileID: 8350852965788609242}
   timingCircleDefaultColor: {r: 1, g: 1, b: 1, a: 1}
@@ -369,7 +370,7 @@ Transform:
   m_GameObject: {fileID: 8985148540499574503}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.239, y: 0.161, z: 0}
+  m_LocalPosition: {x: 1.5, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

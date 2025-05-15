@@ -1,15 +1,15 @@
 using System;
 using Features.CameraSystem;
 using Features.Collision;
-using Features.TimeSystem.Interfaces.Handlers;
 using JetBrains.Annotations;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using VContainer;
+using VContainer.Unity;
 
 namespace Features.InputDispatching
 {
-    public class InputPointerCollisionService : IFixedUpdateHandler
+    public class InputPointerCollisionService : ITickable
     {
         private readonly CameraHolderService _cameraHolderService;
 
@@ -27,7 +27,7 @@ namespace Features.InputDispatching
             inputService.OnHoldClickAction += CheckHeldCollisionWithObjects;
         }
 
-        public void OnFixedUpdate(float deltaTime)
+        public void Tick()
         {
             if (!_isHoldingPointerCollider) return;
 

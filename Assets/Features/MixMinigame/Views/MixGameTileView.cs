@@ -74,20 +74,24 @@ namespace Features.MixMinigame.Views
         protected async UniTask PlayAnimationAndWaitAsync(string animationName, int layer)
         {
             CancelCurrentAnimationAwait(layer);
+            Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
             var cts = new CancellationTokenSource();
             _animationCtsWithLayers.Add(cts, layer);
 
             await ResolveAnimation(animationName, cts.Token);
+            Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Finish");
         }
 
         protected async UniTask PlayAnimationAndReturnToPoolAsync(string animationName, int layer)
         {
             await PlayAnimationAndWaitAsync(animationName, layer);
+            Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
             ReturnToPool();
         }
 
         private void CancelCurrentAnimationAwait(int layer)
         {
+            Debug.Log($"CancelCurrentAnimationAwait {layer}");
             for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
             {
                 var cts = _animationCtsWithLayers.Keys.ElementAt(i);

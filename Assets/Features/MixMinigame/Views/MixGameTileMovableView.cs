@@ -11,6 +11,7 @@ namespace Features.MixMinigame.Views
     {
         [SerializeField] private Transform viewRotationPivot;
 
+        [SerializeField] private SpriteRenderer baseSpriteRenderer;
         [SerializeField] private SpriteRenderer handleSpriteRenderer;
 
         [SerializeField] private SpriteRenderer timingDragCircleSpriteRenderer;
@@ -20,8 +21,8 @@ namespace Features.MixMinigame.Views
         // [SerializeField] private SpriteRenderer dragCircleRenderer;
 
         [SerializeField] private MixGamePointerCollider pointerCollider;
-        private                  float                  _hitTiming;
 
+        private float   _hitTiming;
         private Vector3 _initialBaseScale;
         private Vector3 _initialTimingCircleScale;
         private bool    _isMoving;
@@ -46,8 +47,9 @@ namespace Features.MixMinigame.Views
             timingDragCircleSpriteRenderer.transform.localPosition = Vector3.zero;
             pointerCollider.transform.localPosition                = Vector3.zero;
 
-            var initHandleColor = handleSpriteRenderer.color;
-            handleSpriteRenderer.color = new Color(initHandleColor.r, initHandleColor.g, initHandleColor.b, 1);
+            handleSpriteRenderer.color           = Color.white;
+            baseSpriteRenderer.color             = Color.white;
+            timingDragCircleSpriteRenderer.color = timingCircleDefaultColor;
 
             ((CircleCollider2D)pointerCollider.Collider).radius = 1f;
 
@@ -69,27 +71,27 @@ namespace Features.MixMinigame.Views
                 _isMoving = true;
 
                 _ = PlayAnimationAndWaitAsync("Hit", 0);
-                _ = PlayAnimationAndWaitAsync("TimingDragCircleTransform", 2);
+                _ = PlayAnimationAndWaitAsync("TimingDragCircleTransform", 1);
 
                 ((CircleCollider2D)pointerCollider.Collider).radius *= 2f;
             }
             else
             {
-                _ = PlayAnimationAndReturnToPoolAsync("HitReleased", 0);
-                _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
+                _ = PlayAnimationAndReturnToPoolAsync("HitReleased", 2);
+                _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 1);
             }
         }
 
         protected override void OnMiss()
         {
             _ = PlayAnimationAndReturnToPoolAsync("Miss", 0);
-            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
+            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 1);
         }
 
         protected override void OnFail()
         {
             _ = PlayAnimationAndReturnToPoolAsync("Fail", 0);
-            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
+            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 1);
         }
 
         protected override UniTask ResolveAnimation(string animationName, CancellationToken ct)
@@ -118,35 +120,22 @@ namespace Features.MixMinigame.Views
 
         private Tween HitTween()
         {
-            // cubic bezier paths - simple curve from 0, 0 to 0.5, 0.5 to 1, 0
-
             // todo: consider tileType
-
-            /*var bezierPath = new[]
-            {
-                new Vector3(0.5f, 0.5f, 0), // WP0
-                new Vector3(0, 1, 0), // A
-                new Vector3(-1, 0, 0), // B
-                new Vector3(1, 0, 0), // WP1
-                new Vector3(1, 0, 0), // C
-                new Vector3(0, 1, 0) // D
-            };*/
 
             var bezierPath = new[]
             {
-                new Vector3(0.48f, 0, 0), // WP0
-                new Vector3(0, 0.285f, 0), // A
-                new Vector3(0.48f, 0.285f, 0) // B
+                new Vector3(3f, 0, 0), // WP0
+                new Vector3(0, 1.75f, 0), // A
+                new Vector3(3f, 1.75f, 0) // B
             };
 
             var moveHandleTween = handleSpriteRenderer.transform
-                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
+                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
             var moveDragCircleTween = timingDragCircleSpriteRenderer.transform
-                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
+                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
             var moveColliderTween = pointerCollider.transform
-                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
+                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
 
-            // all at once:
             return DOTween.Sequence()
                 .Append(moveHandleTween)
                 .Join(moveDragCircleTween)
@@ -155,20 +144,41 @@ namespace Features.MixMinigame.Views
 
         private Tween HitReleaseTween()
         {
-            return transform.DOScale(_initialBaseScale * 1.2f, 0.5f)
-                .From(_initialBaseScale);
+            var baseColorTween = baseSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            var handleColorTween = handleSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            return DOTween.Sequence()
+                .Append(baseColorTween)
+                .Join(handleColorTween);
         }
 
         private Tween MissTween()
         {
-            return transform.DOScale(_initialBaseScale * 0.8f, 0.5f)
-                .From(_initialBaseScale);
+            var baseColorTween = baseSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            var handleColorTween = handleSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            return DOTween.Sequence()
+                .Append(baseColorTween)
+                .Join(handleColorTween);
         }
 
         private Tween FailTween()
         {
-            return transform.DOScale(_initialBaseScale * 0.8f, 0.5f)
-                .From(_initialBaseScale);
+            var baseColorTween = baseSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            var handleColorTween = handleSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f)
+                .From(new Color(1, 1, 1, 1));
+            return DOTween.Sequence()
+                .Append(baseColorTween)
+                .Join(handleColorTween);
         }
 
         private Tween ShrinkTween()
@@ -204,9 +214,16 @@ namespace Features.MixMinigame.Views
         private Tween TimingDragCircleFade()
         {
             var initColor = timingDragCircleSpriteRenderer.color;
-            return timingDragCircleSpriteRenderer.DOColor(
+            var colorTween = timingDragCircleSpriteRenderer.DOColor(
                 new Color(initColor.r, initColor.g, initColor.b, 0),
                 0.5f);
+
+            var scaleTween = timingDragCircleSpriteRenderer
+                .transform.DOScale(_initialTimingCircleScale * 3f, 0.5f);
+
+            return DOTween.Sequence()
+                .Append(colorTween)
+                .Join(scaleTween);
         }
     }
 }
