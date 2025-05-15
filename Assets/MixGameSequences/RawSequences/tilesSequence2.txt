@@ -1,0 +1,4 @@
+# visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ;
+# optional - for movables - moveDuration(float) rotationZ(float, euler angles) tileType(int)
+
+1 1 0 0 3 0 0

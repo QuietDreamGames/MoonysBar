@@ -1,4 +1,3 @@
-using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -13,19 +12,21 @@ namespace Features.MixMinigame.Views
         [SerializeField] private Transform viewRotationPivot;
 
         [SerializeField] private SpriteRenderer handleSpriteRenderer;
-        [SerializeField] private SpriteRenderer timingCircleSpriteRenderer;
-        [SerializeField] private SpriteRenderer dragCircleRenderer;
+
+        [SerializeField] private SpriteRenderer timingDragCircleSpriteRenderer;
+        [SerializeField] private Color          timingCircleDefaultColor;
+        [SerializeField] private Color          timingCircleDraggingColor;
+
+        // [SerializeField] private SpriteRenderer dragCircleRenderer;
 
         [SerializeField] private MixGamePointerCollider pointerCollider;
-
-
-        private int   _tileType;
-        private float _hitTiming;
-        private float _moveDuration;
-        private bool  _isMoving;
+        private                  float                  _hitTiming;
 
         private Vector3 _initialBaseScale;
         private Vector3 _initialTimingCircleScale;
+        private bool    _isMoving;
+        private float   _moveDuration;
+        private int     _tileType;
 
         public override void Initialize(MixGameTileViewModel tileViewModel)
         {
@@ -37,16 +38,16 @@ namespace Features.MixMinigame.Views
             _tileType                 = movableData.TileType;
             _isMoving                 = false;
             _initialBaseScale         = transform.localScale;
-            _initialTimingCircleScale = timingCircleSpriteRenderer.transform.localScale;
+            _initialTimingCircleScale = timingDragCircleSpriteRenderer.transform.localScale;
 
             viewRotationPivot.localRotation = Quaternion.Euler(0, 0, movableData.RotationZEuler);
 
-            var initHandleColor = handleSpriteRenderer.color;
-            handleSpriteRenderer.color = new Color(
-                initHandleColor.r, initHandleColor.g, initHandleColor.b,
-                1);
+            handleSpriteRenderer.transform.localPosition           = Vector3.zero;
+            timingDragCircleSpriteRenderer.transform.localPosition = Vector3.zero;
+            pointerCollider.transform.localPosition                = Vector3.zero;
 
-            dragCircleRenderer.gameObject.SetActive(false);
+            var initHandleColor = handleSpriteRenderer.color;
+            handleSpriteRenderer.color = new Color(initHandleColor.r, initHandleColor.g, initHandleColor.b, 1);
 
             ((CircleCollider2D)pointerCollider.Collider).radius = 1f;
 
@@ -57,8 +58,8 @@ namespace Features.MixMinigame.Views
         {
             base.ReturnToPool();
 
-            transform.localScale                            = _initialBaseScale;
-            timingCircleSpriteRenderer.transform.localScale = _initialTimingCircleScale;
+            transform.localScale                                = _initialBaseScale;
+            timingDragCircleSpriteRenderer.transform.localScale = _initialTimingCircleScale;
         }
 
         protected override void OnHit()
@@ -68,53 +69,79 @@ namespace Features.MixMinigame.Views
                 _isMoving = true;
 
                 _ = PlayAnimationAndWaitAsync("Hit", 0);
-                _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
-                _ = PlayAnimationAndWaitAsync("DragCircleFadeIn", 2);
+                _ = PlayAnimationAndWaitAsync("TimingDragCircleTransform", 2);
 
                 ((CircleCollider2D)pointerCollider.Collider).radius *= 2f;
             }
             else
             {
                 _ = PlayAnimationAndReturnToPoolAsync("HitReleased", 0);
-                _ = PlayAnimationAndWaitAsync("DragCircleFade", 2);
+                _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
             }
         }
 
         protected override void OnMiss()
         {
             _ = PlayAnimationAndReturnToPoolAsync("Miss", 0);
-            _ = PlayAnimationAndWaitAsync("DragCircleFadeOut", 2);
+            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
         }
 
         protected override void OnFail()
         {
             _ = PlayAnimationAndReturnToPoolAsync("Fail", 0);
-            _ = PlayAnimationAndWaitAsync("DragCircleFadeOut", 2);
+            _ = PlayAnimationAndWaitAsync("TimingDragCircleFade", 2);
         }
 
         protected override UniTask ResolveAnimation(string animationName, CancellationToken ct)
         {
-            throw new NotImplementedException();
+            var tween = animationName switch
+            {
+                "Hit"                       => HitTween(),
+                "HitReleased"               => HitReleaseTween(),
+                "Miss"                      => MissTween(),
+                "Fail"                      => FailTween(),
+                "Shrink"                    => ShrinkTween(),
+                "TimingDragCircleTransform" => TimingDragCircleTransformTween(),
+                "TimingDragCircleFade"      => TimingDragCircleFade(),
+                _                           => null
+            };
+
+            tween.SetUpdate(UpdateType.Manual);
+            Tweens.Add(tween);
+            tween.OnKill(() =>
+            {
+                if (Tweens.Contains(tween)) Tweens.Remove(tween);
+            });
+
+            return tween.WithCancellation(ct);
         }
 
         private Tween HitTween()
         {
             // cubic bezier paths - simple curve from 0, 0 to 0.5, 0.5 to 1, 0
+
             // todo: consider tileType
 
-            var bezierPath = new []
+            /*var bezierPath = new[]
             {
-                new Vector3(0.5f, 0.5f, 0),  // WP0
-                new Vector3(0, 1, 0),        // A
-                new Vector3(-1, 0, 0),       // B
-                new Vector3(1, 0, 0),        // WP1
-                new Vector3(1, 0, 0),        // C
-                new Vector3(0, 1, 0),        // D
+                new Vector3(0.5f, 0.5f, 0), // WP0
+                new Vector3(0, 1, 0), // A
+                new Vector3(-1, 0, 0), // B
+                new Vector3(1, 0, 0), // WP1
+                new Vector3(1, 0, 0), // C
+                new Vector3(0, 1, 0) // D
+            };*/
+
+            var bezierPath = new[]
+            {
+                new Vector3(0.48f, 0, 0), // WP0
+                new Vector3(0, 0.285f, 0), // A
+                new Vector3(0.48f, 0.285f, 0) // B
             };
 
             var moveHandleTween = handleSpriteRenderer.transform
                 .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
-            var moveDragCircleTween = dragCircleRenderer.transform
+            var moveDragCircleTween = timingDragCircleSpriteRenderer.transform
                 .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
             var moveColliderTween = pointerCollider.transform
                 .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier);
@@ -124,7 +151,6 @@ namespace Features.MixMinigame.Views
                 .Append(moveHandleTween)
                 .Join(moveDragCircleTween)
                 .Join(moveColliderTween);
-
         }
 
         private Tween HitReleaseTween()
@@ -139,6 +165,48 @@ namespace Features.MixMinigame.Views
                 .From(_initialBaseScale);
         }
 
-        // todo : make shrink circle and drag circle the one.
+        private Tween FailTween()
+        {
+            return transform.DOScale(_initialBaseScale * 0.8f, 0.5f)
+                .From(_initialBaseScale);
+        }
+
+        private Tween ShrinkTween()
+        {
+            var shrinkingTween = timingDragCircleSpriteRenderer
+                .transform.DOScale(_initialTimingCircleScale, _hitTiming)
+                .From(_initialTimingCircleScale * 3);
+            var initColor = new Color(
+                timingCircleDefaultColor.r,
+                timingCircleDefaultColor.g,
+                timingCircleDefaultColor.b,
+                0);
+            var coloringTween = timingDragCircleSpriteRenderer
+                .DOColor(timingCircleDefaultColor, _hitTiming)
+                .From(initColor);
+
+            return DOTween.Sequence()
+                .Append(shrinkingTween)
+                .Join(coloringTween);
+        }
+
+        private Tween TimingDragCircleTransformTween()
+        {
+            var scaleTween = timingDragCircleSpriteRenderer
+                .transform.DOScale(_initialTimingCircleScale * 2f, 0.5f);
+            var colorTween = timingDragCircleSpriteRenderer
+                .DOColor(timingCircleDraggingColor, 0.5f);
+            return DOTween.Sequence()
+                .Append(scaleTween)
+                .Join(colorTween);
+        }
+
+        private Tween TimingDragCircleFade()
+        {
+            var initColor = timingDragCircleSpriteRenderer.color;
+            return timingDragCircleSpriteRenderer.DOColor(
+                new Color(initColor.r, initColor.g, initColor.b, 0),
+                0.5f);
+        }
     }
 }

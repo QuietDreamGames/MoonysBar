@@ -29,7 +29,8 @@ namespace Features.Scopes
 
             builder.RegisterComponent(inputDispatcher);
             builder.Register<InputService>(Lifetime.Singleton);
-            builder.Register<InputPointerGameObjectsCollisionService>(Lifetime.Singleton);
+            // builder.RegisterEntryPoint<InputPointerGameObjectsCollisionService>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<InputPointerCollisionService>(Lifetime.Singleton).AsSelf();
         }
     }
 }

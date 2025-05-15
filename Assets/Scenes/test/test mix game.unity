@@ -603,7 +603,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   clickablePrefab: {fileID: 7152419997229027810, guid: 8cfa08b579e8c204fb9d1cd02a26d516, type: 3}
-  movablePrefab: {fileID: 0}
+  movablePrefab: {fileID: 3952337113954782691, guid: 88116908f17f1f446b7efd32344746b0, type: 3}
 --- !u!4 &1357065880
 Transform:
   m_ObjectHideFlags: 0
@@ -648,7 +648,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3352ac7a08854b30849f1a148d471233, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sequenceScriptableObject: {fileID: 11400000, guid: 92dceb3e10507af419742687af588777, type: 2}
+  sequenceScriptableObject: {fileID: 11400000, guid: 3cc5cd7b9fdab2d41b504bf85a446f7e, type: 2}
 --- !u!4 &1835772188
 Transform:
   m_ObjectHideFlags: 0

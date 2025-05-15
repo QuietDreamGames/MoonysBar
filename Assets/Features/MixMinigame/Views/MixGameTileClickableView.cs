@@ -104,10 +104,19 @@ namespace Features.MixMinigame.Views
 
         private Tween ShrinkTween()
         {
-            var tween = dynamicViewSpriteRenderer
+            var shrinkingTween = dynamicViewSpriteRenderer
                 .transform.DOScale(_initialDynamicScale, _hitTiming)
                 .From(_initialDynamicScale * 3);
-            return tween;
+            var currentColor = dynamicViewSpriteRenderer.color;
+            var initColor    = new Color(currentColor.r, currentColor.g, currentColor.b, 0);
+            var targetColor  = new Color(currentColor.r, currentColor.g, currentColor.b, 1);
+            var coloringTween = dynamicViewSpriteRenderer
+                .DOColor(targetColor, _hitTiming * 2)
+                .From(initColor);
+
+            return DOTween.Sequence()
+                .Append(shrinkingTween)
+                .Join(coloringTween);
         }
 
         private Tween ShrinkCircleFade()
