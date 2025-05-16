@@ -16,6 +16,12 @@ namespace Features.MixMinigame.Views
     {
         [SerializeField] protected TextMeshPro textMeshVisualNumber;
 
+        [SerializeField] private ParticleSystem hitStatusParticleSystem;
+        [SerializeField] private Color          hitPSColor;
+        [SerializeField] private Color          missPSColor;
+
+        [SerializeField] private bool isDebugMode = false;
+
         [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
 
         private Dictionary<CancellationTokenSource, int> _animationCtsWithLayers;
@@ -29,6 +35,9 @@ namespace Features.MixMinigame.Views
                 if (Tweens[i] == null) continue;
                 Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
             }
+
+            if (hitStatusParticleSystem.gameObject.activeInHierarchy)
+                hitStatusParticleSystem.Simulate(deltaTime);
         }
 
         public event Action OnReturnToPool;
@@ -49,7 +58,7 @@ namespace Features.MixMinigame.Views
             _animationCtsWithLayers = new Dictionary<CancellationTokenSource, int>();
         }
 
-        public virtual void ReturnToPool()
+        public void ReturnToPool()
         {
             OnReturnToPool?.Invoke();
             OnReturnToPool = null;
@@ -68,35 +77,62 @@ namespace Features.MixMinigame.Views
                     Tweens[i].Kill();
 
             Tweens.Clear();
+
+            hitStatusParticleSystem.gameObject.SetActive(false);
+            hitStatusParticleSystem.Clear();
         }
 
-        protected abstract void OnHit();
-        protected abstract void OnMiss();
-        protected abstract void OnFail();
+        protected virtual void OnHit()
+        {
+            hitStatusParticleSystem.gameObject.SetActive(true);
+            var main = hitStatusParticleSystem.main;
+            main.startColor = hitPSColor;
+            hitStatusParticleSystem.Play();
+        }
+
+        protected virtual void OnMiss()
+        {
+            hitStatusParticleSystem.gameObject.SetActive(true);
+            var main = hitStatusParticleSystem.main;
+            main.startColor = missPSColor;
+            hitStatusParticleSystem.Play();
+        }
+
+        protected virtual void OnFail()
+        {
+            hitStatusParticleSystem.gameObject.SetActive(true);
+            var main = hitStatusParticleSystem.main;
+            main.startColor = missPSColor;
+            hitStatusParticleSystem.Play();
+        }
 
         protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);
 
         protected async UniTask PlayAnimationAndWaitAsync(string animationName, int layer)
         {
             CancelCurrentAnimationAwait(layer);
-            Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
+            if (isDebugMode)
+                Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
             var cts = new CancellationTokenSource();
             _animationCtsWithLayers.Add(cts, layer);
 
             await ResolveAnimation(animationName, cts.Token);
-            Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Finish");
+            if (isDebugMode)
+                Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Finish");
         }
 
         protected async UniTask PlayAnimationAndReturnToPoolAsync(string animationName, int layer)
         {
             await PlayAnimationAndWaitAsync(animationName, layer);
-            Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
+            if (isDebugMode)
+                Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
             ReturnToPool();
         }
 
         private void CancelCurrentAnimationAwait(int layer)
         {
-            Debug.Log($"CancelCurrentAnimationAwait {layer}");
+            if (isDebugMode)
+                Debug.Log($"CancelCurrentAnimationAwait {layer}");
             for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
             {
                 var cts = _animationCtsWithLayers.Keys.ElementAt(i);

@@ -32,18 +32,21 @@ namespace Features.MixMinigame.Views
 
         protected override void OnHit()
         {
+            base.OnHit();
             _ = PlayAnimationAndReturnToPoolAsync("Hit", 0);
             _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
         }
 
         protected override void OnMiss()
         {
+            base.OnMiss();
             _ = PlayAnimationAndReturnToPoolAsync("Miss", 0);
             _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
         }
 
         protected override void OnFail()
         {
+            base.OnFail();
             _ = PlayAnimationAndReturnToPoolAsync("Fail", 0);
             _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
         }
