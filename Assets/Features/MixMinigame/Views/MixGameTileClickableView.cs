@@ -14,22 +14,18 @@ namespace Features.MixMinigame.Views
 
         private float _hitTiming;
 
-        private Vector3 _initialBaseScale;
-        private Vector3 _initialDynamicScale;
-
         public override void Initialize(MixGameTileViewModel tileViewModel)
         {
             base.Initialize(tileViewModel);
+            _hitTiming = tileViewModel.TileModel.HitTiming;
 
-            _initialBaseScale    = transform.localScale;
-            _initialDynamicScale = dynamicViewSpriteRenderer.transform.localScale;
-            _hitTiming           = tileViewModel.TileModel.HitTiming;
+            dynamicViewSpriteRenderer.transform.localScale = Vector3.one;
 
-            var initDynColor = dynamicViewSpriteRenderer.color;
+            var textInitColor = textMeshVisualNumber.color;
+            textMeshVisualNumber.color      = new Color(textInitColor.r, textInitColor.g, textInitColor.b, 1);
+            staticViewSpriteRenderer.color  = Color.white;
+            dynamicViewSpriteRenderer.color = Color.white;
 
-            dynamicViewSpriteRenderer.color = new Color(
-                initDynColor.r, initDynColor.g, initDynColor.b,
-                1);
 
             _ = PlayAnimationAndWaitAsync("Shrink", 1);
         }
@@ -74,39 +70,62 @@ namespace Features.MixMinigame.Views
             return tween.WithCancellation(ct);
         }
 
-        public override void ReturnToPool()
-        {
-            base.ReturnToPool();
-            transform.localScale                           = _initialBaseScale;
-            dynamicViewSpriteRenderer.transform.localScale = _initialDynamicScale;
-        }
-
         private Tween HitTween()
         {
-            var tween = transform.DOScale(_initialBaseScale * 1.2f, 0.5f)
-                .From(_initialBaseScale);
-            return tween;
+            var staticColorTween = staticViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+            var dynColorTween = dynamicViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
+
+            return DOTween.Sequence()
+                .Append(staticColorTween)
+                .Join(dynColorTween)
+                .Join(textColorTween);
         }
 
         private Tween MissTween()
         {
-            var tween = transform.DOScale(_initialBaseScale * 0.8f, 0.5f)
-                .From(_initialBaseScale);
-            return tween;
+            var staticColorTween = staticViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+            var dynColorTween = dynamicViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
+
+            return DOTween.Sequence()
+                .Append(staticColorTween)
+                .Join(dynColorTween)
+                .Join(textColorTween);
         }
 
         private Tween FailTween()
         {
-            var tween = transform.DOScale(_initialBaseScale * 0.5f, 0.5f)
-                .From(_initialBaseScale);
-            return tween;
+            var staticColorTween = staticViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+            var dynColorTween = dynamicViewSpriteRenderer
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
+
+            return DOTween.Sequence()
+                .Append(staticColorTween)
+                .Join(dynColorTween)
+                .Join(textColorTween);
         }
 
         private Tween ShrinkTween()
         {
             var shrinkingTween = dynamicViewSpriteRenderer
-                .transform.DOScale(_initialDynamicScale, _hitTiming)
-                .From(_initialDynamicScale * 3);
+                .transform.DOScale(Vector3.one, _hitTiming)
+                .From(Vector3.one * 3);
             var currentColor = dynamicViewSpriteRenderer.color;
             var initColor    = new Color(currentColor.r, currentColor.g, currentColor.b, 0);
             var targetColor  = new Color(currentColor.r, currentColor.g, currentColor.b, 1);
@@ -121,11 +140,17 @@ namespace Features.MixMinigame.Views
 
         private Tween ShrinkCircleFade()
         {
-            var initColor = staticViewSpriteRenderer.color;
-            var tween = dynamicViewSpriteRenderer.DOColor(
+            var initColor = dynamicViewSpriteRenderer.color;
+            var colorTween = dynamicViewSpriteRenderer.DOColor(
                 new Color(initColor.r, initColor.g, initColor.b, 0),
-                _hitTiming);
-            return tween;
+                0.5f);
+
+            var scaleTween = dynamicViewSpriteRenderer
+                .transform.DOScale(Vector3.one * 3f, 0.5f);
+
+            return DOTween.Sequence()
+                .Append(colorTween)
+                .Join(scaleTween);
         }
     }
 }

@@ -41,6 +41,8 @@ namespace Features.MixMinigame.Views
             _initialBaseScale         = transform.localScale;
             _initialTimingCircleScale = timingDragCircleSpriteRenderer.transform.localScale;
 
+            pointerCollider.Collider.enabled = true;
+
             viewRotationPivot.localRotation              = Quaternion.Euler(0, 0, movableData.RotationZEuler);
             textMeshVisualNumber.transform.localRotation = Quaternion.Euler(0, 0, -movableData.RotationZEuler);
 
@@ -156,12 +158,13 @@ namespace Features.MixMinigame.Views
 
         private Tween HitReleaseTween()
         {
+            pointerCollider.Collider.enabled = false;
+
             var baseColorTween = baseSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
             var handleColorTween = handleSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
+
             return DOTween.Sequence()
                 .Append(baseColorTween)
                 .Join(handleColorTween);
@@ -169,12 +172,12 @@ namespace Features.MixMinigame.Views
 
         private Tween MissTween()
         {
+            pointerCollider.Collider.enabled = false;
+
             var baseColorTween = baseSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
             var handleColorTween = handleSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
 
             var textInitColor = textMeshVisualNumber.color;
             var textColorTween = textMeshVisualNumber
@@ -188,12 +191,12 @@ namespace Features.MixMinigame.Views
 
         private Tween FailTween()
         {
+            pointerCollider.Collider.enabled = false;
+
             var baseColorTween = baseSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
             var handleColorTween = handleSpriteRenderer
-                .DOColor(new Color(1, 1, 1, 0), 0.5f)
-                .From(new Color(1, 1, 1, 1));
+                .DOColor(new Color(1, 1, 1, 0), 0.5f);
 
             var textInitColor = textMeshVisualNumber.color;
             var textColorTween = textMeshVisualNumber
