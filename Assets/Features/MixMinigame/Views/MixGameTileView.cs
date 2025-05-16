@@ -6,6 +6,7 @@ using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Features.MixMinigame.ViewModels;
 using Features.TimeSystem.Interfaces.Handlers;
+using TMPro;
 using UnityEngine;
 using VContainer;
 
@@ -13,6 +14,8 @@ namespace Features.MixMinigame.Views
 {
     public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
     {
+        [SerializeField] protected TextMeshPro textMeshVisualNumber;
+
         [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
 
         private Dictionary<CancellationTokenSource, int> _animationCtsWithLayers;
@@ -36,6 +39,8 @@ namespace Features.MixMinigame.Views
             tileViewModel.OnHit  += OnHit;
             tileViewModel.OnMiss += OnMiss;
             tileViewModel.OnFail += OnFail;
+
+            textMeshVisualNumber.text = tileViewModel.TileModel.Data.VisualNumber.ToString();
 
             transform.localPosition = MixGamePlayingFieldService.ConvertRelativeTilePositionToAbsolute(
                 tileViewModel.TileModel.Data.InitialPosition);

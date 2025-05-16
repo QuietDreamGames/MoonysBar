@@ -47,7 +47,7 @@ namespace Features.MixMinigame.ViewModels
 
             var tileModel = (MixGameTileMovableModel)TileModel;
 
-            if (tileModel.IsMissedFinish(levelTimerValue))
+            if (!tileModel.IsReleasedInForgivenessWindow(levelTimerValue))
                 TriggerFail();
             else
                 TriggerHit();

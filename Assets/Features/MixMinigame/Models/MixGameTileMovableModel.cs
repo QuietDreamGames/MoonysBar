@@ -15,14 +15,14 @@ namespace Features.MixMinigame.Models
         public bool IsReleasedInForgivenessWindow(float levelTimerValue)
         {
             var movableData = (MixGameMovableSequenceElementData)Data;
-            return levelTimerValue >= Data.AppearTiming + movableData.MoveDuration - ForgivenessWindow &&
-                   levelTimerValue <= Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
+            return levelTimerValue >= Data.AppearTiming + HitTiming + movableData.MoveDuration - ForgivenessWindow &&
+                   levelTimerValue <= Data.AppearTiming + HitTiming + movableData.MoveDuration + ForgivenessWindow;
         }
 
         public bool IsMissedFinish(float levelTimerValue)
         {
             var movableData = (MixGameMovableSequenceElementData)Data;
-            return levelTimerValue > Data.AppearTiming + movableData.MoveDuration + ForgivenessWindow;
+            return levelTimerValue > Data.AppearTiming + HitTiming + movableData.MoveDuration + ForgivenessWindow;
         }
     }
 }

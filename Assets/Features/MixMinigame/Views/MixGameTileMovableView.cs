@@ -41,12 +41,16 @@ namespace Features.MixMinigame.Views
             _initialBaseScale         = transform.localScale;
             _initialTimingCircleScale = timingDragCircleSpriteRenderer.transform.localScale;
 
-            viewRotationPivot.localRotation = Quaternion.Euler(0, 0, movableData.RotationZEuler);
+            viewRotationPivot.localRotation              = Quaternion.Euler(0, 0, movableData.RotationZEuler);
+            textMeshVisualNumber.transform.localRotation = Quaternion.Euler(0, 0, -movableData.RotationZEuler);
 
             handleSpriteRenderer.transform.localPosition           = Vector3.zero;
             timingDragCircleSpriteRenderer.transform.localPosition = Vector3.zero;
             pointerCollider.transform.localPosition                = Vector3.zero;
+            textMeshVisualNumber.transform.localPosition           = Vector3.zero;
 
+            var textInitColor = textMeshVisualNumber.color;
+            textMeshVisualNumber.color           = new Color(textInitColor.r, textInitColor.g, textInitColor.b, 1);
             handleSpriteRenderer.color           = Color.white;
             baseSpriteRenderer.color             = Color.white;
             timingDragCircleSpriteRenderer.color = timingCircleDefaultColor;
@@ -135,11 +139,19 @@ namespace Features.MixMinigame.Views
                 .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
             var moveColliderTween = pointerCollider.transform
                 .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
+            var moveTextTween = textMeshVisualNumber.transform
+                .DOLocalPath(bezierPath, _moveDuration, PathType.CubicBezier).SetEase(Ease.Linear);
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
 
             return DOTween.Sequence()
                 .Append(moveHandleTween)
                 .Join(moveDragCircleTween)
-                .Join(moveColliderTween);
+                .Join(moveColliderTween)
+                .Join(moveTextTween)
+                .Join(textColorTween);
         }
 
         private Tween HitReleaseTween()
@@ -163,9 +175,15 @@ namespace Features.MixMinigame.Views
             var handleColorTween = handleSpriteRenderer
                 .DOColor(new Color(1, 1, 1, 0), 0.5f)
                 .From(new Color(1, 1, 1, 1));
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
+
             return DOTween.Sequence()
                 .Append(baseColorTween)
-                .Join(handleColorTween);
+                .Join(handleColorTween)
+                .Join(textColorTween);
         }
 
         private Tween FailTween()
@@ -176,9 +194,15 @@ namespace Features.MixMinigame.Views
             var handleColorTween = handleSpriteRenderer
                 .DOColor(new Color(1, 1, 1, 0), 0.5f)
                 .From(new Color(1, 1, 1, 1));
+
+            var textInitColor = textMeshVisualNumber.color;
+            var textColorTween = textMeshVisualNumber
+                .DOColor(new Color(textInitColor.r, textInitColor.g, textInitColor.b, 0), 0.25f);
+
             return DOTween.Sequence()
                 .Append(baseColorTween)
-                .Join(handleColorTween);
+                .Join(handleColorTween)
+                .Join(textColorTween);
         }
 
         private Tween ShrinkTween()
