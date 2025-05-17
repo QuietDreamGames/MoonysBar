@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Features.MixMinigame.Datas;
 using UnityEngine;
@@ -23,8 +24,10 @@ namespace Features.MixMinigame
         // positions are relative to center, and relative in percentage, from -100 to 100 
         public static MixGameSequenceElementData[] Parse(string rawSequenceText)
         {
-            var lines    = rawSequenceText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var elements = new List<MixGameSequenceElementData>();
+            rawSequenceText = rawSequenceText.Replace("\r", string.Empty);
+            var lines       = rawSequenceText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var elements    = new List<MixGameSequenceElementData>();
+            var cultureInfo = new CultureInfo("en-US");
 
             foreach (var line in lines)
             {
@@ -33,9 +36,11 @@ namespace Features.MixMinigame
                 if (parts.First().First() == '#') continue; // Skip comments
 
                 if (!int.TryParse(parts[0], out var visualNumber)) continue;
-                if (!float.TryParse(parts[1], out var appearTiming)) continue;
-                if (!float.TryParse(parts[2], out var initialRelativePositionX)) continue;
-                if (!float.TryParse(parts[3], out var initialRelativePositionY)) continue;
+                if (!float.TryParse(parts[1], NumberStyles.Number, cultureInfo, out var appearTiming)) continue;
+                if (!float.TryParse(parts[2], NumberStyles.Number, cultureInfo, out var initialRelativePositionX))
+                    continue;
+                if (!float.TryParse(parts[3], NumberStyles.Number, cultureInfo, out var initialRelativePositionY))
+                    continue;
 
                 if (parts.Length == 4) // Clickable
                 {
@@ -44,8 +49,8 @@ namespace Features.MixMinigame
                     continue;
                 }
 
-                if (!float.TryParse(parts[4], out var moveDuration)) continue;
-                if (!float.TryParse(parts[5], out var rotationZ)) continue;
+                if (!float.TryParse(parts[4], NumberStyles.Number, cultureInfo, out var moveDuration)) continue;
+                if (!float.TryParse(parts[5], NumberStyles.Number, cultureInfo, out var rotationZ)) continue;
                 if (!int.TryParse(parts[6], out var tileType)) continue;
 
                 elements.Add(

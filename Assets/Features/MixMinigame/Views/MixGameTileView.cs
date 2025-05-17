@@ -14,11 +14,11 @@ namespace Features.MixMinigame.Views
 {
     public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
     {
-        [SerializeField] protected TextMeshPro textMeshVisualNumber;
+        [SerializeField] protected TextMeshPro    textMeshVisualNumber;
+        [SerializeField] protected ParticleSystem hitStatusParticleSystem;
 
-        [SerializeField] private ParticleSystem hitStatusParticleSystem;
-        [SerializeField] private Color          hitPSColor;
-        [SerializeField] private Color          missPSColor;
+        [SerializeField] private Color hitPSColor;
+        [SerializeField] private Color missPSColor;
 
         [SerializeField] private bool isDebugMode = false;
 
@@ -36,8 +36,8 @@ namespace Features.MixMinigame.Views
                 Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
             }
 
-            if (hitStatusParticleSystem.gameObject.activeInHierarchy)
-                hitStatusParticleSystem.Simulate(deltaTime);
+            // if (hitStatusParticleSystem.gameObject.activeInHierarchy)
+            //     hitStatusParticleSystem.Simulate(deltaTime);
         }
 
         public event Action OnReturnToPool;

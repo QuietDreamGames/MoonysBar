@@ -9,9 +9,9 @@ namespace Features.MixMinigame
 {
     public class MixGameGameObjectEntry : MonoBehaviour, IUpdateHandler
     {
-        [SerializeField] private          MixMinigameSequenceScriptableObject sequenceScriptableObject;
-        [Inject]         private readonly MixGameLevelTimerHolder             _levelTimerHolder;
+        [SerializeField] private MixMinigameSequenceScriptableObject sequenceScriptableObject;
 
+        [Inject] private readonly MixGameLevelTimerHolder      _levelTimerHolder;
         [Inject] private readonly MixGameTileFactory           _tileFactory;
         [Inject] private readonly MixGameTilesHolderAndUpdater _tilesHolderAndUpdater;
         [Inject] private readonly ITransientTimeCollector      _timeCollector;
