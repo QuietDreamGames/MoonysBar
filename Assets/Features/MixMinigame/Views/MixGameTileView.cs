@@ -36,8 +36,8 @@ namespace Features.MixMinigame.Views
                 Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
             }
 
-            // if (hitStatusParticleSystem.gameObject.activeInHierarchy)
-            //     hitStatusParticleSystem.Simulate(deltaTime);
+            if (hitStatusParticleSystem.gameObject.activeInHierarchy)
+                hitStatusParticleSystem.Simulate(deltaTime, true, false, false);
         }
 
         public event Action OnReturnToPool;
@@ -79,15 +79,17 @@ namespace Features.MixMinigame.Views
             Tweens.Clear();
 
             hitStatusParticleSystem.gameObject.SetActive(false);
-            hitStatusParticleSystem.Clear();
+            hitStatusParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
         protected virtual void OnHit()
         {
+            // CAREFUL: movable ignores it on hold begin
+
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = hitPSColor;
-            hitStatusParticleSystem.Play();
+            hitStatusParticleSystem.Simulate(0, true, true);
         }
 
         protected virtual void OnMiss()
@@ -95,7 +97,7 @@ namespace Features.MixMinigame.Views
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = missPSColor;
-            hitStatusParticleSystem.Play();
+            hitStatusParticleSystem.Simulate(0, true, true);
         }
 
         protected virtual void OnFail()
@@ -103,7 +105,7 @@ namespace Features.MixMinigame.Views
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = missPSColor;
-            hitStatusParticleSystem.Play();
+            hitStatusParticleSystem.Simulate(0, true, true);
         }
 
         protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);

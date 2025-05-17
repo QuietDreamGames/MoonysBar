@@ -12,6 +12,9 @@ namespace Features.MixMinigame.Views
         [SerializeField] private SpriteRenderer staticViewSpriteRenderer;
         [SerializeField] private SpriteRenderer dynamicViewSpriteRenderer;
 
+        [SerializeField] private Color dynamicHitColor;
+        [SerializeField] private Color dynamicFailedColor;
+
         private float _hitTiming;
 
         public override void Initialize(MixGameTileViewModel tileViewModel)
@@ -33,12 +36,23 @@ namespace Features.MixMinigame.Views
         protected override void OnHit()
         {
             base.OnHit();
+            dynamicViewSpriteRenderer.color = new Color(
+                dynamicHitColor.r,
+                dynamicHitColor.g,
+                dynamicHitColor.b,
+                dynamicViewSpriteRenderer.color.a);
+
             _ = PlayAnimationAndReturnToPoolAsync("Hit", 0);
             _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
         }
 
         protected override void OnMiss()
         {
+            dynamicViewSpriteRenderer.color = new Color(
+                dynamicFailedColor.r,
+                dynamicFailedColor.g,
+                dynamicFailedColor.b,
+                dynamicViewSpriteRenderer.color.a);
             base.OnMiss();
             _ = PlayAnimationAndReturnToPoolAsync("Miss", 0);
             _ = PlayAnimationAndWaitAsync("ShrinkCircleFade", 1);
