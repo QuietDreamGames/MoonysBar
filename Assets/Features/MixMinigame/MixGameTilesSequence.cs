@@ -20,8 +20,9 @@ namespace Features.MixMinigame
     internal static class MixGameParser
     {
         // raw sequence text format:
-        // visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
-        // positions are relative to center, and relative in percentage, from -100 to 100 
+        // visualNumber(int) appearTiming(float) initialPositionX(float) initialPositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
+        // positions are relative to center, and are related to game field dimensions in pixels (864x864 by default)
+        // if the screen is bigger or smaller than standard FullHD, the camera's orthographic size will be altered.
         public static MixGameSequenceElementData[] Parse(string rawSequenceText)
         {
             rawSequenceText = rawSequenceText.Replace("\r", string.Empty);
@@ -44,7 +45,7 @@ namespace Features.MixMinigame
 
                 if (parts.Length == 4) // Clickable
                 {
-                    var initialPosition = new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100);
+                    var initialPosition = new Vector2(initialRelativePositionX, initialRelativePositionY);
                     elements.Add(new MixGameClickableSequenceElementData(visualNumber, appearTiming, initialPosition));
                     continue;
                 }
@@ -57,7 +58,7 @@ namespace Features.MixMinigame
                     new MixGameMovableSequenceElementData(
                         visualNumber,
                         appearTiming,
-                        new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100),
+                        new Vector2(initialRelativePositionX, initialRelativePositionY),
                         rotationZ,
                         moveDuration,
                         tileType
