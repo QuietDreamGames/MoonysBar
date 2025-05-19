@@ -12,17 +12,17 @@ namespace Features.GameStateMachine
     {
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public GameplayStateMachine(
-            ITimeSystem gameplayTimeSystem 
-            ) : base(new Dictionary<Type, IState>())
+            ITimeSystem gameplayTimeSystem
+        ) : base(new Dictionary<Type, IState>())
         {
             States.Add(typeof(InitState), new InitState(
                 this,
                 gameplayTimeSystem
-                ));
+            ));
 
             States.Add(typeof(GameloopState), new GameloopState(
                 gameplayTimeSystem
-                ));
+            ));
 
             States.Add(typeof(EndLoseState), new EndLoseState());
 

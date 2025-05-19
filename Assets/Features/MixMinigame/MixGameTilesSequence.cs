@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Features.MixMinigame.Datas;
 using UnityEngine;
@@ -8,24 +9,26 @@ namespace Features.MixMinigame
 {
     public class MixGameTilesSequence
     {
-        private readonly MixGameSequenceElementData[] _sequenceElements;
-        public MixGameSequenceElementData[] SequenceElements => _sequenceElements;
-        
         public MixGameTilesSequence(string rawSequenceText)
         {
-            _sequenceElements = MixGameParser.Parse(rawSequenceText);
+            SequenceElements = MixGameParser.Parse(rawSequenceText);
         }
+
+        public MixGameSequenceElementData[] SequenceElements { get; }
     }
 
     internal static class MixGameParser
     {
         // raw sequence text format:
-        // visualNumber(int) appearTiming(float) initialRelativePositionX(float) initialRelativePositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
-        // positions are relative to center, and relative in percentage, from -100 to 100 
+        // visualNumber(int) appearTiming(float) initialPositionX(float) initialPositionY(float) ; optional - for movables - moveDuration(float) finalRelativePositionX(float) finalRelativePositionY(float) [movePathRelativePositionX1(float) movePathRelativePositionY1(float)...]
+        // positions are relative to center, and are related to game field dimensions in pixels (864x864 by default)
+        // if the screen is bigger or smaller than standard FullHD, the camera's orthographic size will be altered.
         public static MixGameSequenceElementData[] Parse(string rawSequenceText)
         {
-            var lines = rawSequenceText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
-            var elements = new List<MixGameSequenceElementData>();
+            rawSequenceText = rawSequenceText.Replace("\r", string.Empty);
+            var lines       = rawSequenceText.Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+            var elements    = new List<MixGameSequenceElementData>();
+            var cultureInfo = new CultureInfo("en-US");
 
             foreach (var line in lines)
             {
@@ -34,39 +37,44 @@ namespace Features.MixMinigame
                 if (parts.First().First() == '#') continue; // Skip comments
 
                 if (!int.TryParse(parts[0], out var visualNumber)) continue;
-                if (!float.TryParse(parts[1], out var appearTiming)) continue;
-                if (!float.TryParse(parts[2], out var initialRelativePositionX)) continue;
-                if (!float.TryParse(parts[3], out var initialRelativePositionY)) continue;
+                if (!float.TryParse(parts[1], NumberStyles.Number, cultureInfo, out var appearTiming)) continue;
+                if (!float.TryParse(parts[2], NumberStyles.Number, cultureInfo, out var initialRelativePositionX))
+                    continue;
+                if (!float.TryParse(parts[3], NumberStyles.Number, cultureInfo, out var initialRelativePositionY))
+                    continue;
 
                 if (parts.Length == 4) // Clickable
                 {
-                    var initialPosition = new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100);
+                    var initialPosition = new Vector2(initialRelativePositionX, initialRelativePositionY);
                     elements.Add(new MixGameClickableSequenceElementData(visualNumber, appearTiming, initialPosition));
                     continue;
                 }
 
-                if (!float.TryParse(parts[4], out var moveDuration)) continue;
-                if (!float.TryParse(parts[5], out var finalRelativePositionX)) continue;
-                if (!float.TryParse(parts[6], out var finalRelativePositionY)) continue;
-
-                var finalPosition = new Vector2(finalRelativePositionX / 100, finalRelativePositionY / 100);
-                var movePath = new Vector2[(parts.Length - 7) / 2];
-                
-                for (var i = 0; i < movePath.Length; i++)
+                if (parts.Length == 5)
                 {
-                    if (!float.TryParse(parts[7 + i * 2], out var pathX)) continue;
-                    if (!float.TryParse(parts[8 + i * 2], out var pathY)) continue;
-                    movePath[i] = new Vector2(pathX / 100, pathY / 100);
+                    if (!float.TryParse(parts[4], NumberStyles.Number, cultureInfo, out var driftFinalPositionY))
+                        continue;
+                    elements.Add(new MixGameDriftingSequenceElementData(
+                        visualNumber,
+                        appearTiming,
+                        new Vector2(initialRelativePositionX, initialRelativePositionY),
+                        driftFinalPositionY
+                    ));
+                    continue;
                 }
+
+                if (!float.TryParse(parts[4], NumberStyles.Number, cultureInfo, out var moveDuration)) continue;
+                if (!float.TryParse(parts[5], NumberStyles.Number, cultureInfo, out var rotationZ)) continue;
+                if (!int.TryParse(parts[6], out var tileType)) continue;
 
                 elements.Add(
                     new MixGameMovableSequenceElementData(
                         visualNumber,
                         appearTiming,
-                        new Vector2(initialRelativePositionX / 100, initialRelativePositionY / 100),
-                        finalPosition,
+                        new Vector2(initialRelativePositionX, initialRelativePositionY),
+                        rotationZ,
                         moveDuration,
-                        movePath
+                        tileType
                     )
                 );
             }

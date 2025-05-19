@@ -1,29 +1,47 @@
 using System;
 using Features.MixMinigame.Models;
-using Features.TimeSystem.Interfaces.Handlers;
 
 namespace Features.MixMinigame.ViewModels
 {
-    public abstract class MixGameTileViewModel : IUpdateHandler
+    public abstract class MixGameTileViewModel : IDisposable
     {
-        public MixGameTileModel TileModel { get; }
-
-        public event Action OnHit;
-        public event Action OnMiss;
-        public event Action OnFail;
-
         protected bool IsProcessed;
-        
+
         public MixGameTileViewModel(MixGameTileModel tileModel)
         {
             TileModel = tileModel;
         }
 
-        public abstract void HandleInteraction(bool isHeld = false);
-        
-        public virtual void OnUpdate(float deltaTime)
+        public MixGameTileModel TileModel { get; }
+
+        public void Dispose()
         {
-            
+            OnHit  = null;
+            OnMiss = null;
+            OnFail = null;
+        }
+
+        public event Action OnHit;
+        public event Action OnMiss;
+        public event Action OnFail;
+
+        public abstract void CheckForMiss(float levelTimerValue);
+
+        public abstract void HandleInteraction(float levelTimerValue, bool isHeld = false);
+
+        protected void TriggerHit()
+        {
+            OnHit?.Invoke();
+        }
+
+        protected void TriggerMiss()
+        {
+            OnMiss?.Invoke();
+        }
+
+        protected void TriggerFail()
+        {
+            OnFail?.Invoke();
         }
     }
 }

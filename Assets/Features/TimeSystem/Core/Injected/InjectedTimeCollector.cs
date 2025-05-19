@@ -11,7 +11,7 @@ namespace Features.TimeSystem.Core.Injected
         public List<IUpdateHandler>      UpdateHandlers      { get; }
         public List<IFixedUpdateHandler> FixedUpdateHandlers { get; }
         public List<ILateUpdateHandler>  LateUpdateHandlers  { get; }
-        
+
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InjectedTimeCollector()
         {

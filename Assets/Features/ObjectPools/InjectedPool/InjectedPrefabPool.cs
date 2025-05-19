@@ -10,8 +10,8 @@ namespace Features.ObjectPools.InjectedPool
         private readonly IObjectResolver _objectResolver;
 
         public InjectedPrefabPool(IObjectResolver objectResolver,
-                                  GameObject prefab, 
-                                  Transform root) : base(prefab, root)
+            GameObject                            prefab,
+            Transform                             root) : base(prefab, root)
         {
             _objectResolver = objectResolver;
         }

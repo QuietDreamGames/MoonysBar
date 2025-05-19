@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c7a845790f6b43df8d53cf26e66862ef, type: 3}
-  m_Name: MixMinigameSequence
+  m_Name: 2
   m_EditorClassIdentifier: 
-  sequenceFile: {fileID: 4900000, guid: bf79da67671a481a898be3bb529d17f8, type: 3}
-  soundtrackName: some_sequence_soundtrack
+  sequenceFile: {fileID: 4900000, guid: b4589428e28248cdaefed3e3fc08a05c, type: 3}
+  soundtrackName: some_sequence_soundtrack_1

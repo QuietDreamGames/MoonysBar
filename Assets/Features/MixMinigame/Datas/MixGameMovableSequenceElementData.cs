@@ -4,26 +4,26 @@ namespace Features.MixMinigame.Datas
 {
     public class MixGameMovableSequenceElementData : MixGameSequenceElementData
     {
-        protected readonly float     moveDuration;
-        protected readonly Vector2   finalPosition;
-        protected readonly Vector2[] movePath;
-        
-        public float     MoveDuration  => moveDuration;
-        public Vector2   FinalPosition => finalPosition;
-        public Vector2[] MovePath      => movePath;
-        
+        protected readonly float moveDuration;
+        protected readonly float rotationZEuler;
+        protected readonly int   tileType;
+
         public MixGameMovableSequenceElementData(
             int     visualNumber,
             float   appearTiming,
             Vector2 initialPosition,
-            Vector2 finalPosition,
+            float   rotationZEuler,
             float   moveDuration,
-            Vector2[] movePath
-            ) : base(visualNumber, appearTiming, initialPosition)
+            int     tileType
+        ) : base(visualNumber, appearTiming, initialPosition)
         {
-            this.finalPosition = finalPosition;
-            this.moveDuration  = moveDuration;
-            this.movePath      = movePath;
+            this.rotationZEuler = rotationZEuler;
+            this.moveDuration   = moveDuration;
+            this.tileType       = tileType;
         }
+
+        public float MoveDuration   => moveDuration;
+        public float RotationZEuler => rotationZEuler;
+        public int   TileType       => tileType;
     }
 }

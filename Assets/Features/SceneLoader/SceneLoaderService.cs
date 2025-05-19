@@ -11,7 +11,7 @@ namespace Features.SceneLoader
         {
             return LoadScene(sceneId, onLoaded);
         }
-        
+
         private async Task LoadScene(int sceneId, Action onLoaded = null)
         {
             AsyncOperation waitNextScene = SceneManager.LoadSceneAsync(sceneId);

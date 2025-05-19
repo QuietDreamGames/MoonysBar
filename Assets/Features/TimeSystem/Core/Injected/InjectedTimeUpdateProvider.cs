@@ -4,25 +4,25 @@ using JetBrains.Annotations;
 using VContainer.Unity;
 
 namespace Features.TimeSystem.Core.Injected
-{    
+{
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class InjectedTimeUpdateProvider : IUpdateProvider, ITickable, IFixedTickable, ILateTickable
     {
         public Action OnUpdate      { get; set; }
         public Action OnFixedUpdate { get; set; }
         public Action OnLateUpdate  { get; set; }
-        
-        public void Tick()
+
+        void ITickable.Tick()
         {
             OnUpdate?.Invoke();
         }
 
-        public void FixedTick()
+        void IFixedTickable.FixedTick()
         {
             OnFixedUpdate?.Invoke();
         }
 
-        public void LateTick()
+        void ILateTickable.LateTick()
         {
             OnLateUpdate?.Invoke();
         }

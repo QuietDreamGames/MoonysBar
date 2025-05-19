@@ -12,24 +12,25 @@ namespace Features.Scopes
 {
     public class GameplayScope : LifetimeScope
     {
-        [SerializeField] private Camera mainCamera;
+        [SerializeField] private Camera          mainCamera;
         [SerializeField] private InputDispatcher inputDispatcher;
-        
+
         protected override void Configure(IContainerBuilder builder)
         {
             builder.RegisterComponent(mainCamera);
-            
-            builder.Register<CameraHolderService>(Lifetime.Scoped);
+
+            builder.Register<CameraHolderService>(Lifetime.Singleton);
 
             builder.RegisterEntryPoint<InjectedTimeUpdateProvider>(Lifetime.Singleton).As<IUpdateProvider>();
             builder.Register<ITimeSystem, InjectedTimeSystem>(Lifetime.Singleton);
             builder.Register<ITransientTimeCollector, InjectedTimeCollector>(Lifetime.Transient);
 
-            builder.Register<GameplayStateMachine>(Lifetime.Scoped);
-            
+            builder.Register<GameplayStateMachine>(Lifetime.Singleton);
+
             builder.RegisterComponent(inputDispatcher);
-            builder.Register<InputService>(Lifetime.Scoped);
-            builder.Register<InputPointerGameObjectsCollisionService>(Lifetime.Scoped);
+            builder.Register<InputService>(Lifetime.Singleton);
+            // builder.RegisterEntryPoint<InputPointerGameObjectsCollisionService>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<InputPointerCollisionService>(Lifetime.Singleton).AsSelf();
         }
     }
 }

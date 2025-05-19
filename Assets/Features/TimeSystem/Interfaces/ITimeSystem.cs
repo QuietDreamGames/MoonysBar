@@ -6,7 +6,7 @@ namespace Features.TimeSystem.Interfaces
     {
         void SetUpdateProvider(IUpdateProvider updateProvider);
 
-        void Subscribe(ITimeCollector timeCollector);
+        void Subscribe(ITimeCollector   timeCollector);
         void Unsubscribe(ITimeCollector timeCollector);
 
         float GetTimeScale();

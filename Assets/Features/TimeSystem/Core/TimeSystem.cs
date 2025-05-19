@@ -7,15 +7,14 @@ namespace Features.TimeSystem.Core
 {
     public class TimeSystem : ITimeSystem
     {
-        private float _timeScale = 1f;
-        private bool  _isPaused;
-        private bool  _isInitialized;
-
-        private readonly List<IUpdateHandler>      _updateHandlers      = new();
         private readonly List<IFixedUpdateHandler> _fixedUpdateHandlers = new();
         private readonly List<ILateUpdateHandler>  _lateUpdateHandlers  = new();
+        private readonly List<IUpdateHandler>      _updateHandlers      = new();
 
-        
+        private bool  _isInitialized;
+        private bool  _isPaused;
+        private float _timeScale = 1f;
+
         public void SetUpdateProvider(IUpdateProvider updateProvider)
         {
             if (updateProvider == null)
@@ -28,7 +27,7 @@ namespace Features.TimeSystem.Core
             updateProvider.OnFixedUpdate += OnFixedUpdate;
             updateProvider.OnLateUpdate  += OnLateUpdate;
         }
-        
+
         public void Initialize()
         {
             _isInitialized = true;
@@ -74,10 +73,7 @@ namespace Features.TimeSystem.Core
         {
             if (_isPaused || !_isInitialized) return;
 
-            for (var i = 0; i < _updateHandlers.Count; i++)
-            {
-                _updateHandlers[i].OnUpdate(Time.deltaTime * _timeScale);
-            }
+            for (var i = 0; i < _updateHandlers.Count; i++) _updateHandlers[i].OnUpdate(Time.deltaTime * _timeScale);
         }
 
         private void OnFixedUpdate()
@@ -85,9 +81,7 @@ namespace Features.TimeSystem.Core
             if (_isPaused || !_isInitialized) return;
 
             for (var i = 0; i < _fixedUpdateHandlers.Count; i++)
-            {
                 _fixedUpdateHandlers[i].OnFixedUpdate(Time.fixedDeltaTime * _timeScale);
-            }
         }
 
         private void OnLateUpdate()
@@ -95,9 +89,7 @@ namespace Features.TimeSystem.Core
             if (_isPaused || !_isInitialized) return;
 
             for (var i = 0; i < _lateUpdateHandlers.Count; i++)
-            {
                 _lateUpdateHandlers[i].OnLateUpdate(Time.deltaTime * _timeScale);
-            }
         }
 
         #endregion

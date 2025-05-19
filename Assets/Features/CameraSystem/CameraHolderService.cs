@@ -7,7 +7,7 @@ namespace Features.CameraSystem
     public class CameraHolderService
     {
         private Camera _mainCamera;
-        
+
         public Camera MainCamera => _mainCamera;
 
         [Inject]

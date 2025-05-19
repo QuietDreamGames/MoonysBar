@@ -4,8 +4,8 @@ namespace Features.MixMinigame.Models
 {
     public class MixGameTileClickableModel : MixGameTileModel
     {
-        public MixGameTileClickableModel(MixGameSequenceElementData data, float forgivenessWindow)
-            : base(data, forgivenessWindow)
+        public MixGameTileClickableModel(MixGameSequenceElementData data, float hitTiming, float forgivenessWindow)
+            : base(data, hitTiming, forgivenessWindow)
         {
         }
     }

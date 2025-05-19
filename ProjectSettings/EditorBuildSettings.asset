@@ -11,7 +11,11 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/MenuScene.unity
     guid: c9ef155bc28fd564da07dcb8ca0c5390
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/test/test wwise.unity
     guid: 9ceca735e34fdde44915f2926ba2ab6f
+  - enabled: 1
+    path: Assets/Scenes/test/test mix game.unity
+    guid: 8ff02be80161121409478c2c50eb2233
   m_configObjects: {}
+  m_UseUCBPForAssetBundles: 0
