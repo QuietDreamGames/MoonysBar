@@ -1,0 +1,13 @@
+# nodes, then edges. node has index and two coordinates (relative to center, pixel of fullHD monitor).
+# edge has two node indexes. node: 0 -100.2 100. edge: 0 1.
+
+# nodes
+0 -50 50
+1 -50 -50
+2 50 -50
+3 50 50
+
+# edges
+0 1
+1 2
+2 3

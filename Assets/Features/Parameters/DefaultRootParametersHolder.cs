@@ -7,5 +7,11 @@ namespace Features.Parameters
         [SerializeField] private DefaultRootParametersScriptableObject defaultRootParametersScriptableObject;
 
         public ResolutionParameters ResolutionParameters => defaultRootParametersScriptableObject.ResolutionParameters;
+
+        public MiniGameScreenParameters MixGameScreenParameters =>
+            defaultRootParametersScriptableObject.MixGameScreenParameters;
+
+        public MiniGameScreenParameters EnchantmentParameters =>
+            defaultRootParametersScriptableObject.EnchantmentScreenParameters;
     }
 }
