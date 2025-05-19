@@ -3,9 +3,9 @@ using JetBrains.Annotations;
 using UnityEngine;
 using VContainer;
 
-namespace Features.MixMinigame
+namespace Features.Enchantment
 {
-    public class MixGamePlayingFieldService
+    public class EnchantmentPlayingFieldService
     {
         private readonly Camera _camera;
 
@@ -20,10 +20,9 @@ namespace Features.MixMinigame
 
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-        public MixGamePlayingFieldService(DefaultRootParametersHolder rootParametersHolder, Camera camera)
+        public EnchantmentPlayingFieldService(DefaultRootParametersHolder rootParametersHolder, Camera camera)
         {
             _resolutionDefaultParameters = rootParametersHolder.ResolutionParameters;
-            _screenDefaultParameters     = rootParametersHolder.MixGameScreenParameters;
             _camera                      = camera;
 
             SetScreenResolution(Screen.currentResolution.width, Screen.currentResolution.height);
