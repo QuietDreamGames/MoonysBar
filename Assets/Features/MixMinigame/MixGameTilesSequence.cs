@@ -50,6 +50,19 @@ namespace Features.MixMinigame
                     continue;
                 }
 
+                if (parts.Length == 5)
+                {
+                    if (!float.TryParse(parts[4], NumberStyles.Number, cultureInfo, out var driftFinalPositionY))
+                        continue;
+                    elements.Add(new MixGameDriftingSequenceElementData(
+                        visualNumber,
+                        appearTiming,
+                        new Vector2(initialRelativePositionX, initialRelativePositionY),
+                        driftFinalPositionY
+                    ));
+                    continue;
+                }
+
                 if (!float.TryParse(parts[4], NumberStyles.Number, cultureInfo, out var moveDuration)) continue;
                 if (!float.TryParse(parts[5], NumberStyles.Number, cultureInfo, out var rotationZ)) continue;
                 if (!int.TryParse(parts[6], out var tileType)) continue;

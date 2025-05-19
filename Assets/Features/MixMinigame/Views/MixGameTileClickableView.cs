@@ -15,12 +15,12 @@ namespace Features.MixMinigame.Views
         [SerializeField] private Color dynamicHitColor;
         [SerializeField] private Color dynamicFailedColor;
 
-        private float _hitTiming;
+        protected float HitTiming;
 
         public override void Initialize(MixGameTileViewModel tileViewModel)
         {
             base.Initialize(tileViewModel);
-            _hitTiming = tileViewModel.TileModel.HitTiming;
+            HitTiming = tileViewModel.TileModel.HitTiming;
 
             dynamicViewSpriteRenderer.transform.localScale = Vector3.one;
 
@@ -77,14 +77,7 @@ namespace Features.MixMinigame.Views
                 _                  => throw new ArgumentOutOfRangeException(nameof(animationName), animationName, null)
             };
 
-            tween.SetUpdate(UpdateType.Manual);
-            Tweens.Add(tween);
-            tween.OnKill(() =>
-            {
-                if (Tweens.Contains(tween)) Tweens.Remove(tween);
-            });
-
-            return tween.WithCancellation(ct);
+            return MorphAnimationTweenToUniTask(tween, ct);
         }
 
         private Tween HitTween()
@@ -141,13 +134,13 @@ namespace Features.MixMinigame.Views
         private Tween ShrinkTween()
         {
             var shrinkingTween = dynamicViewSpriteRenderer
-                .transform.DOScale(Vector3.one, _hitTiming)
+                .transform.DOScale(Vector3.one, HitTiming)
                 .From(Vector3.one * 3);
             var currentColor = dynamicViewSpriteRenderer.color;
             var initColor    = new Color(currentColor.r, currentColor.g, currentColor.b, 0);
             var targetColor  = new Color(currentColor.r, currentColor.g, currentColor.b, 1);
             var coloringTween = dynamicViewSpriteRenderer
-                .DOColor(targetColor, _hitTiming * 2)
+                .DOColor(targetColor, HitTiming * 2)
                 .From(initColor);
 
             return DOTween.Sequence()

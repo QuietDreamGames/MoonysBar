@@ -110,6 +110,18 @@ namespace Features.MixMinigame.Views
 
         protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);
 
+        protected UniTask MorphAnimationTweenToUniTask(Tween tween, CancellationToken ct)
+        {
+            tween.SetUpdate(UpdateType.Manual);
+            Tweens.Add(tween);
+            tween.OnKill(() =>
+            {
+                if (Tweens.Contains(tween)) Tweens.Remove(tween);
+            });
+
+            return tween.WithCancellation(ct);
+        }
+
         protected async UniTask PlayAnimationAndWaitAsync(string animationName, int layer)
         {
             CancelCurrentAnimationAwait(layer);

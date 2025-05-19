@@ -18,8 +18,10 @@ namespace Features.MixMinigame.Factories
 
         [SerializeField] private GameObject clickablePrefab;
         [SerializeField] private GameObject movablePrefab;
+        [SerializeField] private GameObject driftPrefab;
 
         private GameObjectPool<MixGameTileView> _clickablePool;
+        private GameObjectPool<MixGameTileView> _driftPool;
         private GameObjectPool<MixGameTileView> _movablePool;
 
         [Inject] private IObjectResolver _objectResolver;
@@ -28,20 +30,27 @@ namespace Features.MixMinigame.Factories
         {
             _clickablePool = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
             _movablePool   = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
+            _driftPool     = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
         }
 
         private void OnValidate()
         {
-            if (clickablePrefab != null && clickablePrefab.GetComponent<MixGameTileClickableView>() == null)
+            if (!clickablePrefab && clickablePrefab.GetComponent<MixGameTileClickableView>())
             {
                 Debug.LogError($"'{clickablePrefab.name}' is missing MixGameClickableView component.", this);
                 clickablePrefab = null;
             }
 
-            if (movablePrefab != null && movablePrefab.GetComponent<MixGameTileMovableView>() == null)
+            if (!movablePrefab && movablePrefab.GetComponent<MixGameTileMovableView>())
             {
                 Debug.LogError($"'{movablePrefab.name}' is missing MixGameMovableView component.", this);
                 movablePrefab = null;
+            }
+
+            if (!driftPrefab && driftPrefab.GetComponent<MixGameTileDriftingView>())
+            {
+                Debug.LogError($"'{driftPrefab.name}' is missing MixGameDriftingView component.", this);
+                driftPrefab = null;
             }
         }
 
@@ -50,6 +59,9 @@ namespace Features.MixMinigame.Factories
         {
             MixGameTileModel tileModel = data switch
             {
+                MixGameDriftingSequenceElementData driftingData => new MixGameTileClickableModel(driftingData,
+                    HitTiming,
+                    ForgivenessWindow),
                 MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(clickableData,
                     HitTiming,
                     ForgivenessWindow),
@@ -61,17 +73,19 @@ namespace Features.MixMinigame.Factories
 
             MixGameTileViewModel tileViewModel = data switch
             {
-                MixGameClickableSequenceElementData clickableData => new MixGameTileClickableViewModel(tileModel),
-                MixGameMovableSequenceElementData movableData => new MixGameTileMovableViewModel(tileModel),
-                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameDriftingSequenceElementData  => new MixGameTileClickableViewModel(tileModel),
+                MixGameClickableSequenceElementData => new MixGameTileClickableViewModel(tileModel),
+                MixGameMovableSequenceElementData   => new MixGameTileMovableViewModel(tileModel),
+                _                                   => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
 
 
             var (pool, prefab) = data switch
             {
-                MixGameClickableSequenceElementData clickableData => (_clickablePool, clickablePrefab),
-                MixGameMovableSequenceElementData movableData => (_movablePool, movablePrefab),
-                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameDriftingSequenceElementData  => (_driftPool, driftPrefab),
+                MixGameClickableSequenceElementData => (_clickablePool, clickablePrefab),
+                MixGameMovableSequenceElementData   => (_movablePool, movablePrefab),
+                _                                   => throw new ArgumentOutOfRangeException(nameof(data), data, null)
             };
 
             var tileView = pool.Spawn(prefab, parent);

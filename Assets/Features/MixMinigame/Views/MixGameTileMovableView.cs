@@ -1,3 +1,4 @@
+using System;
 using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
@@ -122,17 +123,11 @@ namespace Features.MixMinigame.Views
                 "Shrink"                    => ShrinkTween(),
                 "TimingDragCircleTransform" => TimingDragCircleTransformTween(),
                 "TimingDragCircleFade"      => TimingDragCircleFade(),
-                _                           => null
+                _ =>
+                    throw new ArgumentOutOfRangeException(nameof(animationName), animationName, null)
             };
 
-            tween.SetUpdate(UpdateType.Manual);
-            Tweens.Add(tween);
-            tween.OnKill(() =>
-            {
-                if (Tweens.Contains(tween)) Tweens.Remove(tween);
-            });
-
-            return tween.WithCancellation(ct);
+            return MorphAnimationTweenToUniTask(tween, ct);
         }
 
         private Tween HitTween()
@@ -141,7 +136,7 @@ namespace Features.MixMinigame.Views
 
             var bezierPath = new[]
             {
-                new Vector3(3f, 0, 0),    // WP0
+                new Vector3(3f, 0, 0), // WP0
                 new Vector3(0, 1.75f, 0), // A
                 new Vector3(3f, 1.75f, 0) // B
             };

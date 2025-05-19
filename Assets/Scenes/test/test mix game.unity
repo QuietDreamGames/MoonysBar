@@ -604,6 +604,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   clickablePrefab: {fileID: 7152419997229027810, guid: 8cfa08b579e8c204fb9d1cd02a26d516, type: 3}
   movablePrefab: {fileID: 3952337113954782691, guid: 88116908f17f1f446b7efd32344746b0, type: 3}
+  driftPrefab: {fileID: 7152419997229027810, guid: 68d85216f5e6d5e49acab96277ac983b, type: 3}
 --- !u!4 &1357065880
 Transform:
   m_ObjectHideFlags: 0
