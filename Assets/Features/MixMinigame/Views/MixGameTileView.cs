@@ -1,18 +1,15 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using Cysharp.Threading.Tasks;
-using DG.Tweening;
 using Features.MixMinigame.ViewModels;
-using Features.TimeSystem.Interfaces.Handlers;
+using Features.View;
 using TMPro;
 using UnityEngine;
 using VContainer;
 
 namespace Features.MixMinigame.Views
 {
-    public abstract class MixGameTileView : MonoBehaviour, IUpdateHandler
+    public abstract class MixGameTileView : TweenedView
     {
         [SerializeField] protected TextMeshPro    textMeshVisualNumber;
         [SerializeField] protected ParticleSystem hitStatusParticleSystem;
@@ -20,21 +17,11 @@ namespace Features.MixMinigame.Views
         [SerializeField] private Color hitPSColor;
         [SerializeField] private Color missPSColor;
 
-        [SerializeField] private bool isDebugMode = false;
-
         [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
 
-        private Dictionary<CancellationTokenSource, int> _animationCtsWithLayers;
-
-        protected List<Tween> Tweens;
-
-        public virtual void OnUpdate(float deltaTime)
+        public override void OnUpdate(float deltaTime)
         {
-            for (var i = 0; i < Tweens?.Count; i++)
-            {
-                if (Tweens[i] == null) continue;
-                Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
-            }
+            base.OnUpdate(deltaTime);
 
             if (hitStatusParticleSystem.gameObject.activeInHierarchy)
                 hitStatusParticleSystem.Simulate(deltaTime, true, false, false);
@@ -42,9 +29,10 @@ namespace Features.MixMinigame.Views
 
         public event Action OnReturnToPool;
 
-
         public virtual void Initialize(MixGameTileViewModel tileViewModel)
         {
+            base.Initialize();
+
             tileViewModel.OnHit  += OnHit;
             tileViewModel.OnMiss += OnMiss;
             tileViewModel.OnFail += OnFail;
@@ -53,9 +41,6 @@ namespace Features.MixMinigame.Views
 
             transform.localPosition = MixGamePlayingFieldService.ConvertRelativeToWorldPosition(
                 tileViewModel.TileModel.Data.InitialPosition);
-
-            Tweens                  = new List<Tween>();
-            _animationCtsWithLayers = new Dictionary<CancellationTokenSource, int>();
         }
 
         public void ReturnToPool()
@@ -63,20 +48,7 @@ namespace Features.MixMinigame.Views
             OnReturnToPool?.Invoke();
             OnReturnToPool = null;
 
-            for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
-            {
-                var cts = _animationCtsWithLayers.Keys.ElementAt(i);
-                cts.Cancel();
-                cts.Dispose();
-            }
-
-            _animationCtsWithLayers?.Clear();
-
-            for (var i = Tweens.Count - 1; i >= 0; i--)
-                if (Tweens[i] != null && Tweens[i].active)
-                    Tweens[i].Kill();
-
-            Tweens.Clear();
+            ClearAnimations();
 
             hitStatusParticleSystem.gameObject.SetActive(false);
             hitStatusParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
@@ -110,25 +82,13 @@ namespace Features.MixMinigame.Views
 
         protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);
 
-        protected UniTask MorphAnimationTweenToUniTask(Tween tween, CancellationToken ct)
-        {
-            tween.SetUpdate(UpdateType.Manual);
-            Tweens.Add(tween);
-            tween.OnKill(() =>
-            {
-                if (Tweens.Contains(tween)) Tweens.Remove(tween);
-            });
-
-            return tween.WithCancellation(ct);
-        }
-
         protected async UniTask PlayAnimationAndWaitAsync(string animationName, int layer)
         {
             CancelCurrentAnimationAwait(layer);
             if (isDebugMode)
                 Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
             var cts = new CancellationTokenSource();
-            _animationCtsWithLayers.Add(cts, layer);
+            AnimationCtsWithLayers.Add(cts, layer);
 
             await ResolveAnimation(animationName, cts.Token);
             if (isDebugMode)
@@ -141,22 +101,6 @@ namespace Features.MixMinigame.Views
             if (isDebugMode)
                 Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
             ReturnToPool();
-        }
-
-        private void CancelCurrentAnimationAwait(int layer)
-        {
-            if (isDebugMode)
-                Debug.Log($"CancelCurrentAnimationAwait {layer}");
-            for (var i = 0; i < _animationCtsWithLayers?.Count; i++)
-            {
-                var cts = _animationCtsWithLayers.Keys.ElementAt(i);
-                if (_animationCtsWithLayers[cts] != layer) continue;
-
-                cts.Cancel();
-                cts.Dispose();
-                _animationCtsWithLayers.Remove(cts);
-                break;
-            }
         }
     }
 }
