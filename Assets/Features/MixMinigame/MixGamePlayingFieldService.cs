@@ -53,40 +53,38 @@ namespace Features.MixMinigame
                 ? Mathf.FloorToInt(_screenWidth * _resolutionDefaultParameters.MixGamePlayfieldWidth)
                 : Mathf.FloorToInt(_screenHeight * _resolutionDefaultParameters.MixGamePlayfieldHeight);
 
-            _fieldHeight = _fieldWidth;
-
             if (_fieldWidth != defaultFieldWidth)
                 _camera.orthographicSize = _resolutionDefaultParameters.MixGameCameraOrthographicSize *
                     _fieldWidth / defaultFieldWidth;
+
+            _fieldHeight = _fieldWidth;
         }
 
-        public Vector2 ConvertRelativeTilePositionToAbsolute(Vector2 relativePosition)
-        {
-            var fieldSize = GetFieldSize();
+        // public Vector2 ConvertRelativeTilePositionToAbsolute(Vector2 relativePosition)
+        // {
+        //     var fieldSize = GetFieldSize();
+        //
+        //     // Adjust relative position to screen coordinates
+        //     var x = relativePosition.x * fieldSize.x + _screenWidth / 2f;
+        //     var y = relativePosition.y * fieldSize.y + _screenHeight / 2f;
+        //
+        //     return _camera.ScreenToWorldPoint(new Vector3(x, y, _camera.nearClipPlane));
+        // }
 
-            // Adjust relative position to screen coordinates
-            var x = relativePosition.x * fieldSize.x + _screenWidth / 2f;
-            var y = relativePosition.y * fieldSize.y + _screenHeight / 2f;
-
-            return _camera.ScreenToWorldPoint(new Vector3(x, y, _camera.nearClipPlane));
-        }
-
-        public Vector2 ConvertRelativeToWorldPosition(Vector2 relativePosition)
+        public Vector2 ConvertRelativeToWorldPosition(Vector2 screenUnscaledPosition)
         {
             // Calculate the playfield size in world units
-            float playfieldSizeInWorldUnits = Camera.main.orthographicSize * 2f; // Orthographic size covers half the height
-            float playfieldSizeInPixels = Screen.height * 0.8f;
+            var playfieldSizeInWorldUnits = _camera.orthographicSize * 2f; // Orthographic size covers half the height
 
             // Scale factor to convert from pixels to world units
-            float scaleFactor = playfieldSizeInWorldUnits / playfieldSizeInPixels;
+            var scaleFactor = playfieldSizeInWorldUnits / _screenHeight;
 
-            // Convert relative position to world position
-            float worldX = relativePosition.x * scaleFactor;
-            float worldY = relativePosition.y * scaleFactor;
+            // Convert screen default position to world position
+            var worldX = screenUnscaledPosition.x * scaleFactor;
+            var worldY = screenUnscaledPosition.y * scaleFactor;
 
             // Return the world position
             return new Vector2(worldX, worldY);
         }
-
     }
 }

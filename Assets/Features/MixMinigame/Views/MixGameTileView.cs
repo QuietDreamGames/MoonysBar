@@ -51,7 +51,7 @@ namespace Features.MixMinigame.Views
 
             textMeshVisualNumber.text = tileViewModel.TileModel.Data.VisualNumber.ToString();
 
-            transform.localPosition = MixGamePlayingFieldService.ConvertRelativeTilePositionToAbsolute(
+            transform.localPosition = MixGamePlayingFieldService.ConvertRelativeToWorldPosition(
                 tileViewModel.TileModel.Data.InitialPosition);
 
             Tweens                  = new List<Tween>();
