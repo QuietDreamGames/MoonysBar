@@ -1,11 +1,12 @@
+using Features.Enchantment.Interfaces;
 using Features.Parameters;
 using JetBrains.Annotations;
 using UnityEngine;
 using VContainer;
 
-namespace Features.Enchantment
+namespace Features.Enchantment.Implementations
 {
-    public class EnchantmentPlayingFieldService
+    public class EnchantmentPlayingFieldService : IEnchantmentPlayingFieldService
     {
         private readonly Camera _camera;
 

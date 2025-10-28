@@ -1,4 +1,5 @@
-using Features.Enchantment;
+using Features.Enchantment.Implementations;
+using Features.Enchantment.Interfaces;
 using VContainer;
 using VContainer.Unity;
 
@@ -8,7 +9,7 @@ namespace Features.Scopes
     {
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.Register<EnchantmentPlayingFieldService>(Lifetime.Scoped);
+            builder.Register<IEnchantmentPlayingFieldService, EnchantmentPlayingFieldService>(Lifetime.Scoped);
         }
     }
 }
