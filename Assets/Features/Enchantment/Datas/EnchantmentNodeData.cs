@@ -6,14 +6,14 @@ namespace Features.Enchantment.Datas
     {
         public EnchantmentNodeData(
             int     index,
-            Vector2 initialPosition)
+            Vector2 position)
         {
-            Index           = index;
-            InitialPosition = initialPosition;
+            Index    = index;
+            Position = position;
         }
 
         public int Index { get; }
 
-        public Vector2 InitialPosition { get; }
+        public Vector2 Position { get; }
     }
 }

@@ -1,20 +1,26 @@
 ﻿using System.Collections.Generic;
+using Features.Enchantment.Interfaces;
 using UnityEngine;
 
-namespace Features.Enchantment
+namespace Features.Enchantment.Implementations
 {
-    public class LineForeshadowElementsFabric : MonoBehaviour
+    public class LineForeshadowElementsFabric : MonoBehaviour, ILineForeshadowElementsFabric
     {
         [SerializeField] private SpriteRenderer linePartPrefab;
         [SerializeField] private SpriteRenderer lineEndPrefab;
-        [SerializeField] private SpriteRenderer line90DegreeTurnPrefab;
+
+        public GameObject CreateLineEnd()
+        {
+            var end = Instantiate(original: lineEndPrefab, parent: transform);
+            return end.gameObject;
+        }
 
         public List<GameObject> CreateLineParts(int count)
         {
             var parts = new List<GameObject>();
             for (var i = 0; i < count; i++)
             {
-                var part = Instantiate(linePartPrefab, transform);
+                var part = Instantiate(original: linePartPrefab, parent: transform);
                 parts.Add(part.gameObject);
             }
 
