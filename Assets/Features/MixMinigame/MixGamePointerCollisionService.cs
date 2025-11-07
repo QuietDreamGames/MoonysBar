@@ -32,15 +32,8 @@ namespace Features.MixMinigame
 
             var tileClickableView = pointerCollider.GetComponentInParent<MixGameTileClickableView>();
 
-            if (!tileClickableView) return;
-
-            var tiles = _tilesHolderAndUpdater.GetTiles();
-            for (var i = 0; i < tiles.Count; i++)
-            {
-                if (tiles[i].Item2 != tileClickableView) continue;
-                tiles[i].Item3.HandleInteraction(_levelTimerHolder.Timer);
-                break;
-            }
+            if (_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileClickableView, result: out var tile))
+                tile.Item3.HandleInteraction(_levelTimerHolder.Timer);
         }
 
         private void OnPointerColliderHeld(PointerCollider pointerCollider, bool isHeld)
@@ -49,15 +42,9 @@ namespace Features.MixMinigame
             if (mixGamePointerCollider.IsClickable) return;
 
             var tileMovableView = pointerCollider.GetComponentInParent<MixGameTileMovableView>();
-            if (!tileMovableView) return;
 
-            var tiles = _tilesHolderAndUpdater.GetTiles();
-            for (var i = 0; i < tiles.Count; i++)
-            {
-                if (tiles[i].Item2 != tileMovableView) continue;
-                tiles[i].Item3.HandleInteraction(_levelTimerHolder.Timer, isHeld);
-                break;
-            }
+            if (_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileMovableView, result: out var tile))
+                tile.Item3.HandleInteraction(levelTimerValue: _levelTimerHolder.Timer, isHeld: isHeld);
         }
     }
 }

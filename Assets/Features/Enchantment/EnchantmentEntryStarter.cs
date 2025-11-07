@@ -8,6 +8,7 @@ namespace Features.Enchantment
     {
         [SerializeField] private EnchantmentNodesLayoutScriptableObject layoutScriptableObject;
 
+        [Inject] private EnchantmentPathController                _enchantmentPathController;
         [Inject] private IEnchantmentForeshadowLineBuilderService _foreshadowLineBuilderService;
         [Inject] private IEnchantmentPlayingFieldService          _playingFieldService;
 
@@ -21,6 +22,7 @@ namespace Features.Enchantment
             }
 
             _foreshadowLineBuilderService.BuildForeshadowLine(layout);
+            _enchantmentPathController.SetLayout(layout);
         }
     }
 }

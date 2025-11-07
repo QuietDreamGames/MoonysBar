@@ -53,9 +53,24 @@ namespace Features.MixMinigame
             view.OnReturnToPool += () => RemoveTileByView(view);
         }
 
-        public List<(MixGameTileModel, MixGameTileView, MixGameTileViewModel)> GetTiles()
+        public bool TryFindTileByPresenter(MixGameTileView                presenter,
+            out (MixGameTileModel, MixGameTileView, MixGameTileViewModel) result)
         {
-            return _tiles;
+            if (presenter == null)
+            {
+                result = default;
+                return false;
+            }
+
+            for (var i = 0; i < _tiles.Count; i++)
+                if (_tiles[i].Item2 == presenter)
+                {
+                    result = _tiles[i];
+                    return true;
+                }
+
+            result = default;
+            return false;
         }
 
         public void RemoveTileByModel(MixGameTileModel model)
