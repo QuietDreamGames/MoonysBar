@@ -8,7 +8,7 @@ using UnityEngine;
 
 namespace Features.View
 {
-    public abstract class TweenedView : MonoBehaviour, IUpdateHandler
+    public abstract class TweenedPresenter : MonoBehaviour, IUpdateHandler
     {
         [SerializeField] protected bool isDebugMode = false;
 
@@ -21,7 +21,7 @@ namespace Features.View
             for (var i = 0; i < Tweens?.Count; i++)
             {
                 if (Tweens[i] == null) continue;
-                Tweens[i].ManualUpdate(deltaTime, Time.deltaTime);
+                Tweens[i].ManualUpdate(deltaTime: deltaTime, unscaledDeltaTime: Time.deltaTime);
             }
         }
 

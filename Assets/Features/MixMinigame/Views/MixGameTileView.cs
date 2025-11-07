@@ -9,7 +9,7 @@ using VContainer;
 
 namespace Features.MixMinigame.Views
 {
-    public abstract class MixGameTileView : TweenedView
+    public abstract class MixGameTileView : TweenedPresenter
     {
         [SerializeField] protected TextMeshPro    textMeshVisualNumber;
         [SerializeField] protected ParticleSystem hitStatusParticleSystem;
@@ -24,7 +24,8 @@ namespace Features.MixMinigame.Views
             base.OnUpdate(deltaTime);
 
             if (hitStatusParticleSystem.gameObject.activeInHierarchy)
-                hitStatusParticleSystem.Simulate(deltaTime, true, false, false);
+                hitStatusParticleSystem.Simulate(t: deltaTime, withChildren: true, restart: false,
+                    fixedTimeStep: false);
         }
 
         public event Action OnReturnToPool;
@@ -51,7 +52,8 @@ namespace Features.MixMinigame.Views
             ClearAnimations();
 
             hitStatusParticleSystem.gameObject.SetActive(false);
-            hitStatusParticleSystem.Stop(true, ParticleSystemStopBehavior.StopEmittingAndClear);
+            hitStatusParticleSystem.Stop(withChildren: true,
+                stopBehavior: ParticleSystemStopBehavior.StopEmittingAndClear);
         }
 
         protected virtual void OnHit()
@@ -61,7 +63,7 @@ namespace Features.MixMinigame.Views
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = hitPSColor;
-            hitStatusParticleSystem.Simulate(0, true, true);
+            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
         }
 
         protected virtual void OnMiss()
@@ -69,7 +71,7 @@ namespace Features.MixMinigame.Views
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = missPSColor;
-            hitStatusParticleSystem.Simulate(0, true, true);
+            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
         }
 
         protected virtual void OnFail()
@@ -77,7 +79,7 @@ namespace Features.MixMinigame.Views
             hitStatusParticleSystem.gameObject.SetActive(true);
             var main = hitStatusParticleSystem.main;
             main.startColor = missPSColor;
-            hitStatusParticleSystem.Simulate(0, true, true);
+            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
         }
 
         protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);
@@ -88,16 +90,16 @@ namespace Features.MixMinigame.Views
             if (isDebugMode)
                 Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
             var cts = new CancellationTokenSource();
-            AnimationCtsWithLayers.Add(cts, layer);
+            AnimationCtsWithLayers.Add(key: cts, value: layer);
 
-            await ResolveAnimation(animationName, cts.Token);
+            await ResolveAnimation(animationName: animationName, ct: cts.Token);
             if (isDebugMode)
                 Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Finish");
         }
 
         protected async UniTask PlayAnimationAndReturnToPoolAsync(string animationName, int layer)
         {
-            await PlayAnimationAndWaitAsync(animationName, layer);
+            await PlayAnimationAndWaitAsync(animationName: animationName, layer: layer);
             if (isDebugMode)
                 Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
             ReturnToPool();

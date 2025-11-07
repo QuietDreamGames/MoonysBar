@@ -1,28 +1,31 @@
 using System;
-using Features.View;
+using Features.Enchantment.Enums;
+using Features.Enchantment.Models;
 
 namespace Features.Enchantment.Views
 {
-    public class EnchantmentNodeView : TweenedView
+    public class EnchantmentNodeView : IDisposable
     {
-        public  void Initialize(object nodeViewModel)
+        public EnchantmentNodeView(EnchantmentNodeModel nodeModel)
         {
-            base.Initialize();
+            NodeModel = nodeModel;
+            State     = EnchantmentNodeViewState.UnconnectedIdle;
         }
 
-        public override void OnUpdate(float deltaTime)
+        public EnchantmentNodeViewState State { get; private set; }
+
+        private EnchantmentNodeModel NodeModel { get; set; }
+
+        public void Dispose()
         {
-            base.OnUpdate(deltaTime);
         }
 
-        public event Action OnReturnToPool;
-
-        public void ReturnToPool()
+        public void HandleHover(bool isHovered)
         {
-            OnReturnToPool?.Invoke();
-            OnReturnToPool = null;
+        }
 
-            ClearAnimations();
+        public void HandleHold(bool isHeld)
+        {
         }
     }
 }
