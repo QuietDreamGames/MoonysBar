@@ -79,6 +79,20 @@ namespace Features.Enchantment
             return false;
         }
 
+        public bool TryFindEnchantmentNodeByIndex(int                                 index,
+            out (EnchantmentNodeModel, EnchantmentNodePresenter, EnchantmentNodeView) result)
+        {
+            for (var i = 0; i < _enchantmentNodes.Count; i++)
+                if (_enchantmentNodes[i].Item1.Data.Index == index)
+                {
+                    result = _enchantmentNodes[i];
+                    return true;
+                }
+
+            result = default;
+            return false;
+        }
+
         public bool TryGetEnchantmentHandle(out (EnchantmentHandlePresenter, EnchantmentHandleView) result)
         {
             if (_enchantmentHandle == default)
