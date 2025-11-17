@@ -1,8 +1,9 @@
 {
+    "version": 1,
     "name": "MainInputMap",
     "maps": [
         {
-            "name": "barMixGame",
+            "name": "bar-mix-game",
             "id": "ec410dce-aed6-4204-8b98-22ccec0f16d1",
             "actions": [
                 {
@@ -15,7 +16,7 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "clickhold",
+                    "name": "click-hold",
                     "type": "Button",
                     "id": "53c3ea55-49e6-4639-8627-e0d236291e63",
                     "expectedControlType": "",
@@ -54,7 +55,165 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "clickhold",
+                    "action": "click-hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "enchantment-game",
+            "id": "03f19f43-9d73-4fe2-a9e0-8b897f4e356d",
+            "actions": [
+                {
+                    "name": "click",
+                    "type": "Button",
+                    "id": "bb88ea02-2f7b-4e1a-9c13-baf1bcbe8bc7",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "click-hold",
+                    "type": "Button",
+                    "id": "e749772a-fa2a-41f5-90ed-3b25cff42eb1",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "pointer-move",
+                    "type": "Value",
+                    "id": "e5a22ff0-4191-45f5-acf6-8b43bef1af6f",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "1738f44b-46e8-48d6-9395-f0dc31e509ec",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "86286944-6705-4359-a2bb-d7cfe50cf721",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "0f792e7a-c4d6-471a-8330-c1d8647ccc87",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click-hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "5e35cbae-482a-4b37-a486-bcf62a386206",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "pointer-move",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "ui-default",
+            "id": "3c267921-38bc-495f-8073-4cdd2ac3aed5",
+            "actions": [
+                {
+                    "name": "click",
+                    "type": "Button",
+                    "id": "20e115ac-6a06-44d5-abc1-8340ae5b1f76",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "click-hold",
+                    "type": "Button",
+                    "id": "3469d8b0-cf6c-4fb9-a9c2-c8e8aa5d75ef",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "pointer-move",
+                    "type": "Value",
+                    "id": "0181cb12-578a-457a-9b82-67e1d03702d1",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "fd51b2f2-8ae2-47e8-9b3b-acf987e5cf92",
+                    "path": "<Mouse>/leftButton",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "51c71d2d-9b31-4dfb-afe6-3eed03c890ad",
+                    "path": "<Touchscreen>/primaryTouch/tap",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "d77af25a-e928-4589-9ce1-b0f361a6c7ad",
+                    "path": "<Pointer>/press",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "click-hold",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "70b65c22-9583-404d-bb51-ee488df20ee7",
+                    "path": "<Pointer>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "pointer-move",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
