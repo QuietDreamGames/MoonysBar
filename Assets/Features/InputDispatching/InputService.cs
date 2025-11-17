@@ -7,16 +7,16 @@ namespace Features.InputDispatching
 {
     public class InputService
     {
-        public event Action<InputAction.CallbackContext>       OnClickAction;
-        public event Action<InputAction.CallbackContext, bool> OnHoldClickAction;
-
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InputService(InputDispatcher inputDispatcher)
         {
-            inputDispatcher.OnClickAction     += OnClick;
-            inputDispatcher.OnHoldClickAction += OnHoldClick;
+            // inputDispatcher.OnClickAction     += OnClick;
+            // inputDispatcher.OnHoldClickAction += OnHoldClick;
         }
+
+        public event Action<InputAction.CallbackContext>       OnClickAction;
+        public event Action<InputAction.CallbackContext, bool> OnHoldClickAction;
 
         private void OnClick(InputAction.CallbackContext context)
         {
@@ -25,7 +25,7 @@ namespace Features.InputDispatching
 
         private void OnHoldClick(InputAction.CallbackContext context, bool isStarted)
         {
-            OnHoldClickAction?.Invoke(context, isStarted);
+            OnHoldClickAction?.Invoke(arg1: context, arg2: isStarted);
         }
     }
 }
