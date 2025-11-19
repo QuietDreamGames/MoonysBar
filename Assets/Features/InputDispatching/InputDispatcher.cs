@@ -26,21 +26,31 @@ namespace Features.InputDispatching
                 Debug.LogWarning($"NOT IMPLEMENTED. Tried to set input scheme to: {inputSchemeType}");
         }
 
-        public void OnPointerPress(InputAction.CallbackContext context, bool isPressed)
+        public void OnPointerPress(InputAction.CallbackContext context)
         {
-            if (isDebugMode)
-                Debug.Log(isPressed ? "Pointer pressed" : "Pointer released");
+            if (context.performed) return;
+            if (context.started)
+            {
+                if (isDebugMode)
+                    Debug.Log("Click hold started");
 
-            if (isPressed)
                 OnPointerPressAction?.Invoke(context);
-            else
+            }
+            else if (context.canceled)
+            {
+                if (isDebugMode)
+                    Debug.Log("Click hold canceled");
+
                 OnPointerReleaseAction?.Invoke(context);
+            }
         }
 
-        public void OnPointerMove(InputAction.CallbackContext context, Vector2 delta)
+        public void OnPointerMove(InputAction.CallbackContext context)
         {
             if (isDebugMode)
                 Debug.Log("Pointer moved");
+
+            var delta = context.ReadValue<Vector2>();
 
             OnPointerMoveAction?.Invoke(arg1: context, arg2: delta);
         }

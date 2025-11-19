@@ -7,10 +7,11 @@ using Features.InputDispatching.PointerStates;
 using Features.TimeSystem.Interfaces;
 using Features.TimeSystem.Interfaces.Injected;
 using JetBrains.Annotations;
+using VContainer.Unity;
 
 namespace Features.InputDispatching
 {
-    public class InputPointerStateMachine : BaseStateMachine
+    public class InputPointerStateMachine : BaseStateMachine, IStartable
     {
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InputPointerStateMachine(
@@ -50,6 +51,11 @@ namespace Features.InputDispatching
             timeSystem.Subscribe(transientTimeCollector);
             timeSystem.SetUpdateProvider(updateProvider);
             timeSystem.Initialize();
+        }
+
+        public void Start()
+        {
+            Enter<IdlePointerState>();
         }
     }
 }

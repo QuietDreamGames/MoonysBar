@@ -14,11 +14,13 @@ namespace Features.Scopes
 
         protected override void Configure(IContainerBuilder builder)
         {
-            builder.Register<InputPointerStateMachine>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<InputPointerStateMachine>(Lifetime.Singleton);
 
             builder.Register<ITimeSystem, InjectedTimeSystem>(Lifetime.Singleton);
             builder.RegisterEntryPoint<InjectedTimeUpdateProvider>(Lifetime.Singleton).As<IUpdateProvider>();
             builder.Register<ITransientTimeCollector, InjectedTimeCollector>(Lifetime.Transient);
+
+            builder.RegisterEntryPoint<InputPointerDebugger>(Lifetime.Singleton);
         }
     }
 }
