@@ -1,25 +1,71 @@
+using System;
 using Features.InputDispatching.Interfaces;
+using Features.Parameters;
 using UnityEngine;
 using VContainer;
+using VContainer.Unity;
 
 namespace Features.InputDispatching
 {
-    public class InputPointerDebugger
+    public class InputPointerDebugger : IStartable, IDisposable
     {
-        [Inject]
-        public InputPointerDebugger(IInputEventBusFeed inputEventBusFeed)
+        [Inject] private IInputEventBusFeed          _inputEventBusFeed;
+        [Inject] private DefaultRootParametersHolder _rootParametersHolder;
+
+        public void Dispose()
         {
-            inputEventBusFeed.OnPointerClick     += () => LogEvent("Pointer Clicked");
-            inputEventBusFeed.OnPointerHoldStart += () => LogEvent("Pointer Hold Started");
-            inputEventBusFeed.OnPointerHoldEnd   += () => LogEvent("Pointer Hold Ended");
-            inputEventBusFeed.OnPointerDrag      += (Vector2 delta) => LogEvent("Pointer Drag Started");
-            inputEventBusFeed.OnPointerDragEnd   += () => LogEvent("Pointer Drag Ended");
-            inputEventBusFeed.OnPointerDrift     += (Vector2 delta) => LogEvent("Pointer Drifted");
+            if (!_rootParametersHolder.DebugParameters.IsInputDebugMode)
+                return;
+
+            _inputEventBusFeed.OnPointerClick     -= PointerClickFired;
+            _inputEventBusFeed.OnPointerHoldStart -= PointerHoldStartFired;
+            _inputEventBusFeed.OnPointerHoldEnd   -= PointerHoldEndFired;
+            _inputEventBusFeed.OnPointerDrag      -= PointerDragFired;
+            _inputEventBusFeed.OnPointerDragEnd   -= PointerDragEndFired;
+            _inputEventBusFeed.OnPointerDrift     -= PointerDriftFired;
         }
 
-        private void LogEvent(string eventDescription)
+        public void Start()
         {
-            Debug.Log($"[InputPointerDebugger] {eventDescription}");
+            if (!_rootParametersHolder.DebugParameters.IsInputDebugMode)
+                return;
+
+            _inputEventBusFeed.OnPointerClick     += PointerClickFired;
+            _inputEventBusFeed.OnPointerHoldStart += PointerHoldStartFired;
+            _inputEventBusFeed.OnPointerHoldEnd   += PointerHoldEndFired;
+            _inputEventBusFeed.OnPointerDrag      += PointerDragFired;
+            _inputEventBusFeed.OnPointerDragEnd   += PointerDragEndFired;
+            _inputEventBusFeed.OnPointerDrift     += PointerDriftFired;
+        }
+
+        private void PointerClickFired()
+        {
+            Debug.Log("Pointer Click Fired");
+        }
+
+        private void PointerHoldStartFired()
+        {
+            Debug.Log("Pointer Hold Start Fired");
+        }
+
+        private void PointerHoldEndFired()
+        {
+            Debug.Log("Pointer Hold End Fired");
+        }
+
+        private void PointerDriftFired(Vector2 delta)
+        {
+            Debug.Log($"Pointer Drift Fired with delta: {delta}");
+        }
+
+        private void PointerDragFired(Vector2 delta)
+        {
+            Debug.Log($"Pointer Drag Fired with delta: {delta}");
+        }
+
+        private void PointerDragEndFired()
+        {
+            Debug.Log("Pointer Drag End Fired");
         }
     }
 }
