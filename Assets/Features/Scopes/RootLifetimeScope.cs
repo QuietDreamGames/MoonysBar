@@ -1,5 +1,5 @@
-using Features.InputDispatching;
-using Features.InputDispatching.Interfaces;
+using Features.Input;
+using Features.Input.Interfaces;
 using Features.Parameters;
 using Features.SceneLoader;
 using UnityEngine;

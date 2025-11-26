@@ -1,4 +1,4 @@
-using Features.InputDispatching;
+using Features.Input;
 using Features.TimeSystem.Core.Injected;
 using Features.TimeSystem.Interfaces;
 using Features.TimeSystem.Interfaces.Injected;
