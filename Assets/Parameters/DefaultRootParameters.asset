@@ -20,4 +20,4 @@ MonoBehaviour:
   enchantmentPlayfieldWidth: 0.8
   enchantmentPlayfieldHeight: 0.8
   enchantmentCameraOrthographicSize: 5
-  isInputDebugMode: 0
+  isInputDebugMode: 1

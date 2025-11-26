@@ -1,6 +1,6 @@
 using Features.Collision;
 using Features.Enchantment.Presenters;
-using Features.InputDispatching;
+using Features.Input;
 using JetBrains.Annotations;
 using VContainer;
 

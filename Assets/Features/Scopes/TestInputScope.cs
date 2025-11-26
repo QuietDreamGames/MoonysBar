@@ -1,4 +1,4 @@
-using Features.InputDispatching;
+using Features.Input;
 using UnityEngine;
 using VContainer;
 using VContainer.Unity;

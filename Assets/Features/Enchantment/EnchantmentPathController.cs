@@ -1,10 +1,9 @@
-using System;
 using System.Collections.Generic;
 using Features.CameraSystem;
 using Features.Enchantment.Datas;
 using Features.Enchantment.Enums;
 using Features.Enchantment.Presenters;
-using Features.InputDispatching;
+using Features.Input;
 using Features.TimeSystem.Interfaces.Handlers;
 using UnityEngine;
 using VContainer;
@@ -59,13 +58,11 @@ namespace Features.Enchantment
                             startPosition: handle.Item1.transform.position,
                             endPosition: handle.Item1.transform.position
                         ));
-
                     }
                 }
 
             if (heldCollider.PointerType == EnchantmentPointerColliderType.Handle)
             {
-
             }
         }
 
@@ -138,7 +135,6 @@ namespace Features.Enchantment
 
         public void OnUpdate(float deltaTime)
         {
-
         }
     }
 

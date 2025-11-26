@@ -1,5 +1,5 @@
 using Features.Collision;
-using Features.InputDispatching;
+using Features.Input;
 using Features.MixMinigame.Views;
 using JetBrains.Annotations;
 using VContainer;
