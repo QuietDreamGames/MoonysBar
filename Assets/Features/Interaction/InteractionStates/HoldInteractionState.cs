@@ -20,7 +20,7 @@ namespace Features.Interaction.InteractionStates
 
         private bool _isActive;
 
-        private readonly PointerCollider[] _sharedTargetCollidersBuffer = new PointerCollider[10];
+        private readonly PointerCollider[] _internalTargetCollidersBuffer = new PointerCollider[10];
 
         public HoldInteractionState(
             IMachine                          stateMachine,
@@ -55,7 +55,7 @@ namespace Features.Interaction.InteractionStates
                 _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                     kind: InteractionKind.Hold,
                     phase: InteractionPhase.Start,
-                    targets: pointerColliders.AsSpan()
+                    targets: pointerColliders.AsMemory()
                 ));
             else
                 _interactionEventBusSink.HandleInteraction(new InteractionEvent(
@@ -99,13 +99,13 @@ namespace Features.Interaction.InteractionStates
                     for (var i = 0; i < targetsCount; i++)
                     {
                         var index = colliderUpdates.AddedIndices[i];
-                        _sharedTargetCollidersBuffer[i] = newCollidersSpan[index];
+                        _internalTargetCollidersBuffer[i] = newCollidersSpan[index];
                     }
 
                     _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                         kind: InteractionKind.Hold,
                         phase: InteractionPhase.Collect,
-                        targets: _sharedTargetCollidersBuffer.AsSpan(start: 0, length: targetsCount)
+                        targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
                     ));
                 }
 
@@ -118,13 +118,13 @@ namespace Features.Interaction.InteractionStates
                     for (var i = 0; i < targetsCount; i++)
                     {
                         var index = colliderUpdates.RemovedIndices[i];
-                        _sharedTargetCollidersBuffer[i] = oldCollidersSpan[index];
+                        _internalTargetCollidersBuffer[i] = oldCollidersSpan[index];
                     }
 
                     _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                         kind: InteractionKind.Hold,
                         phase: InteractionPhase.PrematureExit,
-                        targets: _sharedTargetCollidersBuffer.AsSpan(start: 0, length: targetsCount)
+                        targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
                     ));
                 }
             }
@@ -217,7 +217,7 @@ namespace Features.Interaction.InteractionStates
                 _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                     kind: InteractionKind.Drag,
                     phase: InteractionPhase.Action,
-                    targets: _collisionBuffer.CollidersBuffer.AsSpan(start: 0, length: _collisionBuffer.FindLength()),
+                    targets: _collisionBuffer.CollidersBuffer.AsMemory(start: 0, length: _collisionBuffer.FindLength()),
                     delta: delta
                 ));
             else

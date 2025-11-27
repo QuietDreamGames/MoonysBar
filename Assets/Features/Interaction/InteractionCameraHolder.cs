@@ -13,5 +13,10 @@ namespace Features.Interaction
             camera = _interactionCamera;
             return camera != null;
         }
+
+        public void SetInteractionCamera(Camera camera)
+        {
+            _interactionCamera = camera;
+        }
     }
 }

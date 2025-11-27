@@ -1,42 +1,100 @@
 using System;
-using Features.Collision;
+using System.Collections.Generic;
+using Features.Interaction.Enums;
+using Features.Interaction.Helpers;
+using Features.Interaction.Interfaces;
 using JetBrains.Annotations;
-using UnityEngine;
 
 namespace Features.Interaction
 {
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-    public class InteractionEventBus
+    public class InteractionEventBus : IInteractionEventBusFeed, IInteractionEventBusSink
     {
-        public event Action<PointerCollider>          OnObjectClicked;
-        public event Action<PointerCollider>          OnObjectHoldStart;
-        public event Action<PointerCollider>          OnObjectHoldEnd;
-        public event Action<PointerCollider, Vector2> OnObjectDrag;
-        public event Action<PointerCollider>          OnObjectDragEnd;
+        private readonly Dictionary<InteractionPhase, List<Subscriber>> _subsByPhase
+            = new();
 
-        public void ObjectClickedFire(PointerCollider pointerCollider)
+        public bool SupportsMultipleHits   => CheckMultipleHitsSubscribers();
+        public bool SupportsPrematureExits => CheckPrematureExitSubscribers();
+        public bool SupportsCollects       => CheckCollectSubscribers();
+
+        private bool CheckMultipleHitsSubscribers()
         {
-            OnObjectClicked?.Invoke(pointerCollider);
+            foreach (var subs in _subsByPhase.Values)
+            foreach (var sub in subs)
+                if (sub.SupportsMultipleHits)
+                    return true;
+
+            return false;
         }
 
-        public void ObjectHoldStartFire(PointerCollider pointerCollider)
+        private bool CheckPrematureExitSubscribers()
         {
-            OnObjectHoldStart?.Invoke(pointerCollider);
+            return _subsByPhase.TryGetValue(key: InteractionPhase.PrematureExit, value: out var list) && list.Count > 0;
         }
 
-        public void ObjectHoldEndFire(PointerCollider pointerCollider)
+        private bool CheckCollectSubscribers()
         {
-            OnObjectHoldEnd?.Invoke(pointerCollider);
+            return _subsByPhase.TryGetValue(key: InteractionPhase.Collect, value: out var list) && list.Count > 0;
         }
 
-        public void ObjectDragFire(PointerCollider pointerCollider, Vector2 delta)
+        public void HandleInteraction(InteractionEvent interactionEvent)
         {
-            OnObjectDrag?.Invoke(arg1: pointerCollider, arg2: delta);
+            if (!_subsByPhase.TryGetValue(key: interactionEvent.Phase, value: out var bucket))
+                return;
+
+            foreach (var s in bucket)
+                if ((s.Kinds & interactionEvent.Kind) != 0)
+                    s.Handler(interactionEvent);
         }
 
-        public void ObjectDragEndFire(PointerCollider pointerCollider)
+        public IDisposable Subscribe(
+            InteractionKind          kinds,
+            InteractionPhase         phases,
+            bool                     supportsMultipleHits,
+            Action<InteractionEvent> handler
+        )
         {
-            OnObjectDragEnd?.Invoke(pointerCollider);
+            var subscriber = new Subscriber
+            {
+                Kinds                = kinds,
+                Phases               = phases,
+                SupportsMultipleHits = supportsMultipleHits,
+                Handler              = handler
+            };
+
+            foreach (InteractionPhase phase in Enum.GetValues(typeof(InteractionPhase)))
+                if (phases.HasFlag(phase))
+                {
+                    if (!_subsByPhase.TryGetValue(key: phase, value: out var subs))
+                    {
+                        subs                = new List<Subscriber>();
+                        _subsByPhase[phase] = subs;
+                    }
+
+                    subs.Add(subscriber);
+                }
+
+            return new InteractionSubscriptionDisposable(
+                onDispose: () =>
+                {
+                    foreach (InteractionPhase phase in Enum.GetValues(typeof(InteractionPhase)))
+                        if (phases.HasFlag(phase) &&
+                            _subsByPhase.TryGetValue(key: phase, value: out var subs))
+                        {
+                            subs.Remove(subscriber);
+                            if (subs.Count == 0)
+                                _subsByPhase.Remove(phase);
+                        }
+                }
+            );
+        }
+
+        private sealed class Subscriber
+        {
+            public InteractionKind          Kinds;
+            public InteractionPhase         Phases;
+            public bool                     SupportsMultipleHits;
+            public Action<InteractionEvent> Handler;
         }
     }
 }

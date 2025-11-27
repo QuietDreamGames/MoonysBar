@@ -1,5 +1,7 @@
 using Features.Input;
 using Features.Input.Interfaces;
+using Features.Interaction;
+using Features.Interaction.Interfaces;
 using Features.Parameters;
 using Features.SceneLoader;
 using UnityEngine;
@@ -25,6 +27,12 @@ namespace Features.Scopes
             builder.RegisterComponent(inputDispatcher)
                 .As<IInputDispatcher>()
                 .As<IInputSchemeSelector>();
+
+            // interaction
+            builder.Register<InteractionCameraHolder>(Lifetime.Singleton);
+            builder.Register<InteractionEventBus>(Lifetime.Singleton)
+                .As<IInteractionEventBusFeed>()
+                .As<IInteractionEventBusSink>();
 
             // default parameters holder:
             builder.RegisterComponent(defaultRootParametersHolder);

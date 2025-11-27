@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using Features.Collision;
 using Features.Input;
-using Features.Interaction.Helpers;
 using JetBrains.Annotations;
 using UnityEngine;
 using VContainer;
@@ -12,8 +11,8 @@ namespace Features.Interaction
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class InteractionHitRegistrator
     {
-        [Inject] private InteractionCameraHolder       _interactionCameraHolder;
-        [Inject] private InteractionRayCollisionBuffer _rayCollisionBuffer;
+        [Inject] private InteractionCameraHolder _interactionCameraHolder;
+        // [Inject] private InteractionRayCollisionBuffer _rayCollisionBuffer;
 
         public bool TryHitPointerCollider(out PointerCollider collider)
         {
@@ -25,8 +24,10 @@ namespace Features.Interaction
             }
 
             var ray = camera.ScreenPointToRay(pointerScreenPosition);
-            if (Physics.Raycast(ray: ray, hitInfo: out var hitInfo)
-                && hitInfo.collider.TryGetComponent(out collider)) return true;
+
+            var rayHit = Physics2D.Raycast(origin: ray.origin, direction: ray.direction);
+            if (rayHit.collider != null && rayHit.collider.TryGetComponent(out collider))
+                return true;
 
             collider = null;
             return false;
@@ -46,8 +47,14 @@ namespace Features.Interaction
                 return false;
             }
 
-            var ray      = camera.ScreenPointToRay(pointerScreenPosition + delta);
-            var hitCount = Physics.RaycastNonAlloc(ray: ray, results: _rayCollisionBuffer.HitsBuffer);
+            var ray = camera.ScreenPointToRay(pointerScreenPosition + delta);
+            var hits = Physics2D.RaycastAll(
+                origin: ray.origin,
+                direction: ray.direction
+            );
+
+            var hitCount = hits.Length;
+
             if (hitCount == 0)
             {
                 colliders = Array.Empty<PointerCollider>();
@@ -57,7 +64,7 @@ namespace Features.Interaction
             var list = new List<PointerCollider>(hitCount);
             for (var i = 0; i < hitCount; i++)
             {
-                var hit = _rayCollisionBuffer.HitsBuffer[i];
+                var hit = hits[i];
                 if (hit.collider != null && hit.collider.TryGetComponent(out PointerCollider pointerCollider))
                     list.Add(pointerCollider);
             }

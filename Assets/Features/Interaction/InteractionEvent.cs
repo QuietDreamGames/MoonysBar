@@ -5,19 +5,19 @@ using UnityEngine;
 
 namespace Features.Interaction
 {
-    public readonly ref struct InteractionEvent
+    public readonly struct InteractionEvent
     {
         public InteractionEvent(
-            InteractionKind               kind,
-            InteractionPhase              phase,
-            ReadOnlySpan<PointerCollider> targets,
-            Vector2                       delta = default
+            InteractionKind                 kind,
+            InteractionPhase                phase,
+            ReadOnlyMemory<PointerCollider> targets,
+            Vector2                         delta = default
         )
         {
             Kind          = kind;
             Phase         = phase;
             Targets       = targets;
-            PrimaryTarget = targets.Length > 0 ? targets[0] : null;
+            PrimaryTarget = null;
             Delta         = delta;
             IsMultiple    = true;
         }
@@ -41,8 +41,8 @@ namespace Features.Interaction
         public InteractionPhase Phase { get; }
         public Vector2          Delta { get; }
 
-        public readonly ReadOnlySpan<PointerCollider> Targets;
-        public readonly PointerCollider               PrimaryTarget;
+        public readonly ReadOnlyMemory<PointerCollider> Targets;
+        public readonly PointerCollider                 PrimaryTarget;
 
         public readonly bool IsMultiple;
     }

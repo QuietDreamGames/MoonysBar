@@ -214,7 +214,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   parentReference:
-    TypeName: 
+    TypeName: Features.Scopes.RootLifetimeScope
   autoRun: 1
   autoInjectGameObjects:
   - {fileID: 2447731408733459699}

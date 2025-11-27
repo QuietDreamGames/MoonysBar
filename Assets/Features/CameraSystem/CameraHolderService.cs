@@ -1,30 +1,34 @@
+using Features.Interaction;
+using JetBrains.Annotations;
 using UnityEngine;
 using VContainer;
-using JetBrains.Annotations;
 
 namespace Features.CameraSystem
 {
     public class CameraHolderService
     {
-        private Camera _mainCamera;
-
-        public Camera MainCamera => _mainCamera;
+        //temp solution
+        private readonly InteractionCameraHolder _interactionCameraHolder;
 
         [Inject]
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
-        public CameraHolderService(Camera mainCamera)
+        public CameraHolderService(Camera mainCamera, InteractionCameraHolder interactionCameraHolder)
         {
-            _mainCamera = mainCamera;
+            _interactionCameraHolder = interactionCameraHolder;
+            MainCamera               = mainCamera;
 
-            if (_mainCamera == null)
-            {
-                Debug.LogWarning("CameraHolderService was initialized with no main camera");
-            }
+            if (MainCamera == null) Debug.LogWarning("CameraHolderService was initialized with no main camera");
+
+
+            _interactionCameraHolder.SetInteractionCamera(MainCamera);
         }
+
+        public Camera MainCamera { get; private set; }
 
         public void ChangeMainCamera(Camera camera)
         {
-            _mainCamera = camera;
+            _interactionCameraHolder.SetInteractionCamera(MainCamera);
+            MainCamera = camera;
         }
     }
 }
