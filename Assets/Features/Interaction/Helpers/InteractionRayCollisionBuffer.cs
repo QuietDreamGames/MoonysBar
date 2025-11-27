@@ -6,6 +6,6 @@ namespace Features.Interaction.Helpers
     [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
     public class InteractionRayCollisionBuffer
     {
-        public readonly RaycastHit[] HitsBuffer = new RaycastHit[10];
+        public readonly RaycastHit2D[] HitsBuffer = new RaycastHit2D[10];
     }
 }

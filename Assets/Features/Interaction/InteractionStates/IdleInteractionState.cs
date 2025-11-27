@@ -53,7 +53,7 @@ namespace Features.Interaction.InteractionStates
                     _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                         kind: InteractionKind.Click,
                         phase: InteractionPhase.Action,
-                        targets: pointerColliders.AsSpan()
+                        targets: pointerColliders.AsMemory()
                     ));
             }
             else if (_hitRegistrator.TryHitPointerCollider(out var pointerCollider))
@@ -84,7 +84,7 @@ namespace Features.Interaction.InteractionStates
                 _interactionEventBusSink.HandleInteraction(new InteractionEvent(
                     kind: InteractionKind.Drag,
                     phase: InteractionPhase.Action,
-                    targets: _collisionBuffer.CollidersBuffer.AsSpan(start: 0, length: _collisionBuffer.FindLength()),
+                    targets: _collisionBuffer.CollidersBuffer.AsMemory(start: 0, length: _collisionBuffer.FindLength()),
                     delta: delta
                 ));
             else
