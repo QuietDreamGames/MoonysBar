@@ -61,5 +61,10 @@ namespace Features.Enchantment.Views
         {
             // Hide handle visual
         }
+
+        public bool IsHeld()
+        {
+            return _isHeld;
+        }
     }
 }

@@ -45,5 +45,26 @@ namespace Features.Interaction
         public readonly PointerCollider                 PrimaryTarget;
 
         public readonly bool IsMultiple;
+
+        public bool TryGetFirstTargetOfType<T>(out T target) where T : PointerCollider
+        {
+            target = null;
+
+            if (!IsMultiple)
+                if (PrimaryTarget is T typedCollider)
+                {
+                    target = typedCollider;
+                    return true;
+                }
+
+            foreach (var collider in Targets.Span)
+                if (collider is T typedCollider)
+                {
+                    target = typedCollider;
+                    return true;
+                }
+
+            return false;
+        }
     }
 }
