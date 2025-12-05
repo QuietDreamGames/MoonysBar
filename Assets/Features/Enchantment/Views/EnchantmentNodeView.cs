@@ -6,13 +6,13 @@ namespace Features.Enchantment.Views
 {
     public class EnchantmentNodeView : IDisposable
     {
+        private EnchantmentNodeViewState _state;
+
         public EnchantmentNodeView(EnchantmentNodeModel nodeModel)
         {
             NodeModel = nodeModel;
-            State     = EnchantmentNodeViewState.UnconnectedIdle;
+            _state    = EnchantmentNodeViewState.UnconnectedIdle;
         }
-
-        public EnchantmentNodeViewState State { get; private set; }
 
         private EnchantmentNodeModel NodeModel { get; set; }
 
@@ -20,12 +20,14 @@ namespace Features.Enchantment.Views
         {
         }
 
-        public void HandleHover(bool isHovered)
+        public void SetState(EnchantmentNodeViewState newState)
         {
+            _state = newState;
         }
 
-        public void HandleHold(bool isHeld)
+        public EnchantmentNodeViewState GetState()
         {
+            return _state;
         }
     }
 }
