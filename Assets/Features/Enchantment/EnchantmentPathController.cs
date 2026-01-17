@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using Features.CameraSystem;
 using Features.Enchantment.Datas;
 using Features.Enchantment.Enums;
 using Features.Enchantment.Presenters;
+using Features.Input;
 using Features.Interaction;
 using Features.Interaction.Enums;
 using Features.Interaction.Interfaces;
@@ -14,24 +16,28 @@ namespace Features.Enchantment
 {
     public class EnchantmentPathController : IDisposable, IUpdateHandler
     {
+        private readonly CameraHolderService                 _cameraHolderService;
         private readonly EnchantmentElementsHolderAndUpdater _elementsHolder;
-
-        private          Action<InteractionEvent> _onPointerColliderEvent;
-        private readonly IDisposable              _subscriptionDisposable;
+        private readonly IDisposable                         _subscriptionDisposable;
 
         private List<NodeConnection> _currentConnections;
         private Stack<int>           _currentPath;
 
         private EnchantmentGraphData _layout;
 
+        private Action<InteractionEvent> _onPointerColliderEvent;
+
         private Stack<TempNodeConnectionLine> _tempConnectionLines;
 
         [Inject]
         public EnchantmentPathController(
             IInteractionEventBusFeed            interactionEventBusFeed,
-            EnchantmentElementsHolderAndUpdater elementsHolder)
+            EnchantmentElementsHolderAndUpdater elementsHolder,
+            CameraHolderService                 cameraHolderService
+        )
         {
-            _elementsHolder = elementsHolder;
+            _elementsHolder      = elementsHolder;
+            _cameraHolderService = cameraHolderService;
 
             _onPointerColliderEvent = OnPointerColliderEvent;
 
@@ -43,6 +49,36 @@ namespace Features.Enchantment
                 supportsMultipleHits: true,
                 handler: _onPointerColliderEvent
             );
+
+            _tempConnectionLines = new Stack<TempNodeConnectionLine>();
+        }
+
+        public void Dispose()
+        {
+            _onPointerColliderEvent = null;
+            _subscriptionDisposable.Dispose();
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            if (_tempConnectionLines == null || _tempConnectionLines.Count == 0) return;
+
+            foreach (var tempLine in _tempConnectionLines)
+                Debug.DrawLine(
+                    start: tempLine.StartPosition,
+                    end: tempLine.EndPosition,
+                    color: Color.green
+                );
+
+            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle) && handle.Item2.IsHeld()) return;
+            if (!InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition)) return;
+
+            var cameraPosition = _cameraHolderService.MainCamera.ScreenToWorldPoint(screenPosition);
+            var worldPosition  = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
+            handle.Item1.transform.position = worldPosition;
+
+            var currentTempLine = _tempConnectionLines.Peek();
+            currentTempLine.UpdateEndPosition(newEndPosition: worldPosition);
         }
 
         public void SetLayout(EnchantmentGraphData layout)
@@ -74,9 +110,11 @@ namespace Features.Enchantment
             if (interactionEvent is { Phase: InteractionPhase.Collect, Kind: InteractionKind.Hold })
                 HandleColliderHoldCollect(interactionEvent);
             if (interactionEvent is { Phase: InteractionPhase.Collect, Kind: InteractionKind.Drag })
-                HandleColliderDragCollection(interactionEvent);
+                HandleColliderDragCollect(interactionEvent);
             if (interactionEvent is { Phase: InteractionPhase.End, Kind: InteractionKind.Hold })
-                HandleColliderHoldEnd(interactionEvent);
+                HandleColliderHoldOrDragEnd(interactionEvent);
+            if (interactionEvent is { Phase: InteractionPhase.End, Kind: InteractionKind.Drag })
+                HandleColliderHoldOrDragEnd(interactionEvent);
         }
 
         private void HandleCollidersHoldStart(InteractionEvent interactionEvent)
@@ -93,11 +131,19 @@ namespace Features.Enchantment
                 }
 
                 if (!TryGetNodeIndexByCollider(collider: enchantmentCollider, nodeIndex: out var nodeIndex)) return;
-                if (_elementsHolder.TryFindEnchantmentNodeByIndex(index: nodeIndex, result: out var nodeData)) return;
+                if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: nodeIndex, result: out var nodeData)) return;
 
                 nodeData.Item3.SetState(EnchantmentNodeViewState.UnconnectedHeld);
                 _elementsHolder.TryGetEnchantmentHandle(out var handle);
                 handle.Item2.Show();
+
+                if (InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition))
+                {
+                    var cameraPosition = _cameraHolderService.MainCamera.ScreenToWorldPoint(screenPosition);
+                    var worldPosition  = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
+                    handle.Item1.transform.position = worldPosition;
+                }
+
                 _currentPath.Push(nodeIndex);
             }
 
@@ -135,9 +181,9 @@ namespace Features.Enchantment
                 node.Item3.SetState(EnchantmentNodeViewState.ConnectedHeld);
 
                 _tempConnectionLines.Push(new TempNodeConnectionLine(
-                    startPosition: node.Item2.transform.position,
-                    endPosition: handle.Item1.transform.position
-                ));
+                                              startPosition: node.Item2.transform.position,
+                                              endPosition: handle.Item1.transform.position
+                                          ));
             }
         }
 
@@ -169,12 +215,12 @@ namespace Features.Enchantment
             );
 
             _tempConnectionLines.Push(new TempNodeConnectionLine(
-                startPosition: fromNode.Item2.transform.position,
-                endPosition: handle.Item1.transform.position
-            ));
+                                          startPosition: fromNode.Item2.transform.position,
+                                          endPosition: handle.Item1.transform.position
+                                      ));
         }
 
-        private void HandleColliderDragCollection(InteractionEvent interactionEvent)
+        private void HandleColliderDragCollect(InteractionEvent interactionEvent)
         {
             // a node is already selected. handle state is unknown.
             // if handle is held, and we collected a new legal node, we build a path between first node and this node.
@@ -214,13 +260,13 @@ namespace Features.Enchantment
                 currentTempLine.UpdateEndPosition(newEndPosition: toNode.Item2.transform.position);
 
                 _tempConnectionLines.Push(new TempNodeConnectionLine(
-                    startPosition: toNode.Item2.transform.position,
-                    endPosition: handle.Item1.transform.position
-                ));
+                                              startPosition: toNode.Item2.transform.position,
+                                              endPosition: handle.Item1.transform.position
+                                          ));
             }
         }
 
-        private void HandleColliderHoldEnd(InteractionEvent interactionEvent)
+        private void HandleColliderHoldOrDragEnd(InteractionEvent interactionEvent)
         {
             // the handle is spawned and held. since drag handles connections, no need to do it here.
             // releasing the handle should hide the handle.
@@ -231,6 +277,15 @@ namespace Features.Enchantment
 
             handle.Item2.HandleHold(false);
             handle.Item2.Hide();
+
+            var lastConnectedNodeId = _currentPath.Peek();
+            if (_elementsHolder.TryFindEnchantmentNodeByIndex(index: lastConnectedNodeId, result: out var node))
+            {
+                if (node.Item3.GetState() == EnchantmentNodeViewState.UnconnectedHeld)
+                    node.Item3.SetState(EnchantmentNodeViewState.UnconnectedIdle);
+                else if (node.Item3.GetState() == EnchantmentNodeViewState.ConnectedHeld)
+                    node.Item3.SetState(EnchantmentNodeViewState.ConnectedIdle);
+            }
 
             _tempConnectionLines.Pop();
         }
@@ -273,12 +328,6 @@ namespace Features.Enchantment
             return false;
         }
 
-        public void Dispose()
-        {
-            _onPointerColliderEvent = null;
-            _subscriptionDisposable.Dispose();
-        }
-
         internal class TempNodeConnectionLine
         {
             public readonly Vector2 StartPosition;
@@ -294,24 +343,6 @@ namespace Features.Enchantment
             {
                 EndPosition = newEndPosition;
             }
-        }
-
-        public void OnUpdate(float deltaTime)
-        {
-            if (_tempConnectionLines == null || _tempConnectionLines.Count == 0) return;
-
-            foreach (var tempLine in _tempConnectionLines)
-                Debug.DrawLine(
-                    start: tempLine.StartPosition,
-                    end: tempLine.EndPosition,
-                    color: Color.green
-                );
-
-            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle) && handle.Item2.IsHeld()) return;
-
-            var handlePosition  = handle.Item1.transform.position;
-            var currentTempLine = _tempConnectionLines.Peek();
-            currentTempLine.UpdateEndPosition(newEndPosition: handlePosition);
         }
     }
 }

@@ -9,12 +9,12 @@ namespace Features.Enchantment.Implementations
     public class EnchantmentForeshadowLineBuilderService : IEnchantmentForeshadowLineBuilderService
     {
         private readonly List<GameObject>                _lineParts = new();
-        [Inject] private ILineForeshadowElementsFabric   _lineForeshadowElementsFabric;
+        [Inject] private ILineForeshadowElementsFactory  _lineForeshadowElementsFactory;
         [Inject] private IEnchantmentPlayingFieldService _playingFieldService;
 
         public void BuildForeshadowLine(EnchantmentGraphData layout)
         {
-            _lineParts.AddRange(_lineForeshadowElementsFabric.CreateLineParts(layout.Connections.Count));
+            _lineParts.AddRange(_lineForeshadowElementsFactory.CreateLineParts(layout.Connections.Count));
 
             for (var i = 0; i < layout.Connections.Count; i++)
             {
@@ -31,8 +31,8 @@ namespace Features.Enchantment.Implementations
                 linePart.transform.position = _playingFieldService.ConvertRelativeToWorldPosition(startPosition);
 
                 linePart.transform.rotation = Quaternion.FromToRotation(
-                    fromDirection: Vector3.right,
-                    toDirection: direction
+                    Vector3.right,
+                    direction
                 );
 
                 var spriteRenderer = linePart.GetComponent<SpriteRenderer>();

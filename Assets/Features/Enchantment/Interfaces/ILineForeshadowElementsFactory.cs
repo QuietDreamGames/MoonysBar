@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Features.Enchantment.Interfaces
 {
-    public interface ILineForeshadowElementsFabric
+    public interface ILineForeshadowElementsFactory
     {
         GameObject CreateLineEnd();
 

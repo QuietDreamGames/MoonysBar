@@ -9,8 +9,10 @@ namespace Features.Enchantment
 {
     public class EnchantmentElementsHolderAndUpdater : IUpdateHandler, IDisposable
     {
-        private readonly List<(EnchantmentNodeModel, EnchantmentNodePresenter, EnchantmentNodeView)> _enchantmentNodes;
-        private          (EnchantmentHandlePresenter, EnchantmentHandleView)                         _enchantmentHandle;
+        private readonly List<(EnchantmentNodeModel, EnchantmentNodePresenter, EnchantmentNodeView)> _enchantmentNodes =
+            new();
+
+        private (EnchantmentHandlePresenter, EnchantmentHandleView) _enchantmentHandle;
 
         public void Dispose()
         {
@@ -59,8 +61,9 @@ namespace Features.Enchantment
             // presenter.OnReturnToPool += RemoveEnchantmentHandle;
         }
 
-        public bool TryFindEnchantmentNodeByPresenter(EnchantmentNodePresenter        presenter,
-            out (EnchantmentNodeModel, EnchantmentNodePresenter, EnchantmentNodeView) result)
+        public bool TryFindEnchantmentNodeByPresenter(EnchantmentNodePresenter presenter,
+                                                      out (EnchantmentNodeModel, EnchantmentNodePresenter,
+                                                          EnchantmentNodeView) result)
         {
             if (presenter == null)
             {
@@ -79,8 +82,9 @@ namespace Features.Enchantment
             return false;
         }
 
-        public bool TryFindEnchantmentNodeByIndex(int                                 index,
-            out (EnchantmentNodeModel, EnchantmentNodePresenter, EnchantmentNodeView) result)
+        public bool TryFindEnchantmentNodeByIndex(int index,
+                                                  out (EnchantmentNodeModel, EnchantmentNodePresenter,
+                                                      EnchantmentNodeView) result)
         {
             for (var i = 0; i < _enchantmentNodes.Count; i++)
                 if (_enchantmentNodes[i].Item1.Data.Index == index)

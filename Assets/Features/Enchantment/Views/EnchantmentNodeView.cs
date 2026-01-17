@@ -1,6 +1,7 @@
 using System;
 using Features.Enchantment.Enums;
 using Features.Enchantment.Models;
+using Features.Enchantment.Presenters;
 
 namespace Features.Enchantment.Views
 {
@@ -8,13 +9,15 @@ namespace Features.Enchantment.Views
     {
         private EnchantmentNodeViewState _state;
 
-        public EnchantmentNodeView(EnchantmentNodeModel nodeModel)
+        public EnchantmentNodeView(EnchantmentNodeModel model, EnchantmentNodePresenter presenter)
         {
-            NodeModel = nodeModel;
+            Model     = model;
+            Presenter = presenter;
             _state    = EnchantmentNodeViewState.UnconnectedIdle;
         }
 
-        private EnchantmentNodeModel NodeModel { get; set; }
+        private EnchantmentNodeModel     Model     { get; set; }
+        private EnchantmentNodePresenter Presenter { get; set; }
 
         public void Dispose()
         {
