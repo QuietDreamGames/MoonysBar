@@ -1,19 +1,30 @@
 using Features.Enchantment.Interfaces;
+using Features.TimeSystem.Interfaces;
+using Features.TimeSystem.Interfaces.Handlers;
+using Features.TimeSystem.Interfaces.Injected;
 using UnityEngine;
 using VContainer;
 
 namespace Features.Enchantment
 {
-    public class EnchantmentEntryStarter : MonoBehaviour
+    public class EnchantmentEntryStarter : MonoBehaviour, IUpdateHandler
     {
         [SerializeField] private EnchantmentNodesLayoutScriptableObject layoutScriptableObject;
 
-        [Inject] private EnchantmentPathController                _enchantmentPathController;
-        [Inject] private IEnchantmentForeshadowLineBuilderService _foreshadowLineBuilderService;
-        [Inject] private IEnchantmentPlayingFieldService          _playingFieldService;
+        [Inject] private readonly IEnchantmentElementsFactory              _elementsFactory;
+        [Inject] private readonly EnchantmentElementsHolderAndUpdater      _elementsHolder;
+        [Inject] private readonly EnchantmentPathController                _enchantmentPathController;
+        [Inject] private readonly IEnchantmentForeshadowLineBuilderService _foreshadowLineBuilderService;
+        [Inject] private readonly IEnchantmentPlayingFieldService          _playingFieldService;
 
-        private void Awake()
+        [Inject] private readonly ITransientTimeCollector _timeCollector;
+        [Inject] private readonly ITimeSystem             _timeSystem;
+
+        private void Start()
         {
+            _timeCollector.UpdateHandlers.Add(this);
+            _timeSystem.Subscribe(_timeCollector);
+
             var layout = layoutScriptableObject.GetLayout();
             if (layout == null)
             {
@@ -22,7 +33,27 @@ namespace Features.Enchantment
             }
 
             _foreshadowLineBuilderService.BuildForeshadowLine(layout);
+
+            for (var i = 0; i < layout.Nodes.Count; i++)
+            {
+                var nodeData = layout.Nodes[i];
+                var node     = _elementsFactory.CreateEnchantmentNode(nodeData);
+                _elementsHolder.AddEnchantmentNode(model: node.Item1, presenter: node.Item2, view: node.Item3);
+                node.Item2.transform.position =
+                    _playingFieldService.ConvertRelativeToWorldPosition(nodeData.Position);
+            }
+
+            var enchantmentHandle = _elementsFactory.CreateEnchantmentHandle();
+            enchantmentHandle.Item2.Hide();
+            _elementsHolder.SetEnchantmentHandle(presenter: enchantmentHandle.Item1, view: enchantmentHandle.Item2);
+
             _enchantmentPathController.SetLayout(layout);
+        }
+
+        public void OnUpdate(float deltaTime)
+        {
+            _elementsHolder.OnUpdate(deltaTime);
+            _enchantmentPathController.OnUpdate(deltaTime);
         }
     }
 }

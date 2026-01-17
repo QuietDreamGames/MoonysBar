@@ -17,7 +17,7 @@ namespace Features.Scopes
         {
             builder.RegisterComponent(mainCamera);
 
-            builder.RegisterEntryPoint<CameraHolderService>();
+            builder.RegisterEntryPoint<CameraHolderService>().As<CameraHolderService>();
 
             builder.RegisterEntryPoint<InjectedTimeUpdateProvider>().As<IUpdateProvider>();
             builder.Register<ITimeSystem, InjectedTimeSystem>(Lifetime.Singleton);

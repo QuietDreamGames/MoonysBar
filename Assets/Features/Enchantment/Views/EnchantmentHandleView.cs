@@ -1,4 +1,5 @@
 using System;
+using Features.Enchantment.Presenters;
 
 namespace Features.Enchantment.Views
 {
@@ -6,6 +7,13 @@ namespace Features.Enchantment.Views
     {
         private bool _isHeld;
         private bool _isHovered;
+
+        public EnchantmentHandleView(EnchantmentHandlePresenter presenter)
+        {
+            Presenter = presenter;
+        }
+
+        private EnchantmentHandlePresenter Presenter { get; }
 
         public void Dispose()
         {
@@ -55,11 +63,13 @@ namespace Features.Enchantment.Views
         public void Show()
         {
             // Show handle visual
+            Presenter.ShowHandle();
         }
 
         public void Hide()
         {
             // Hide handle visual
+            Presenter.HideHandle();
         }
 
         public bool IsHeld()

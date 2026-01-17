@@ -4,14 +4,14 @@ using UnityEngine;
 
 namespace Features.Enchantment.Implementations
 {
-    public class LineForeshadowElementsFabric : MonoBehaviour, ILineForeshadowElementsFabric
+    public class LineForeshadowElementsFactory : MonoBehaviour, ILineForeshadowElementsFactory
     {
         [SerializeField] private SpriteRenderer linePartPrefab;
         [SerializeField] private SpriteRenderer lineEndPrefab;
 
         public GameObject CreateLineEnd()
         {
-            var end = Instantiate(original: lineEndPrefab, parent: transform);
+            var end = Instantiate(lineEndPrefab, transform);
             return end.gameObject;
         }
 
@@ -20,7 +20,7 @@ namespace Features.Enchantment.Implementations
             var parts = new List<GameObject>();
             for (var i = 0; i < count; i++)
             {
-                var part = Instantiate(original: linePartPrefab, parent: transform);
+                var part = Instantiate(linePartPrefab, transform);
                 parts.Add(part.gameObject);
             }
 
