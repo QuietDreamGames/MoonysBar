@@ -20,8 +20,7 @@ namespace Features.Enchantment
         private readonly EnchantmentElementsHolderAndUpdater _elementsHolder;
         private readonly IDisposable                         _subscriptionDisposable;
 
-        private List<NodeConnection> _currentConnections;
-        private Stack<int>           _currentPath;
+        private Stack<int> _currentPath;
 
         private EnchantmentGraphData _layout;
 
@@ -61,13 +60,12 @@ namespace Features.Enchantment
 
         public void OnUpdate(float deltaTime)
         {
-            if (_tempConnectionLines != null)
-                foreach (var tempLine in _tempConnectionLines)
-                    Debug.DrawLine(
-                        start: tempLine.StartPosition,
-                        end: tempLine.EndPosition,
-                        color: Color.green
-                    );
+            foreach (var tempLine in _tempConnectionLines)
+                Debug.DrawLine(
+                    start: tempLine.StartPosition,
+                    end: tempLine.EndPosition,
+                    color: Color.green
+                );
 
             if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
             if (!InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition)) return;
@@ -78,6 +76,7 @@ namespace Features.Enchantment
             handle.Item1.transform.position = worldPosition;
 
 
+            if (_tempConnectionLines.Count == 0) return;
             var currentTempLine = _tempConnectionLines.Peek();
             currentTempLine.UpdateEndPosition(newEndPosition: worldPosition);
         }
@@ -86,14 +85,19 @@ namespace Features.Enchantment
         {
             _layout = layout;
 
-            _currentConnections  = new List<NodeConnection>(_layout.Connections);
             _currentPath         = new Stack<int>();
             _tempConnectionLines = new Stack<TempNodeConnectionLine>();
 
+            // Ensure handle starts unheld and inactive at layout set
             if (_elementsHolder.TryGetEnchantmentHandle(out var handle))
+            {
+                handle.Item2.HandleHold(false);
                 handle.Item2.Deactivate();
+            }
             else
+            {
                 Debug.LogError("Enchantment Handle not found in Elements Holder.");
+            }
         }
 
         private void OnPointerColliderEvent(InteractionEvent interactionEvent)
@@ -108,8 +112,10 @@ namespace Features.Enchantment
 
             if (interactionEvent is { Phase: InteractionPhase.Start, Kind: InteractionKind.Hold })
                 HandleCollidersHoldStart(interactionEvent);
-            if (interactionEvent is { Phase: InteractionPhase.Collect, Kind: InteractionKind.Hold })
-                HandleColliderHoldCollect(interactionEvent);
+            // if (interactionEvent is { Phase: InteractionPhase.Collect, Kind: InteractionKind.Hold })
+            //     HandleColliderHoldCollect(interactionEvent);
+            if (interactionEvent is { Phase: InteractionPhase.Action, Kind: InteractionKind.Drag })
+                HandleColliderDragAction(interactionEvent);
             if (interactionEvent is { Phase: InteractionPhase.Collect, Kind: InteractionKind.Drag })
                 HandleColliderDragCollect(interactionEvent);
             if (interactionEvent is { Phase: InteractionPhase.End, Kind: InteractionKind.Hold })
@@ -135,17 +141,31 @@ namespace Features.Enchantment
                 if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: nodeIndex, result: out var nodeData)) return;
 
                 nodeData.Item3.SetState(EnchantmentNodeViewState.UnconnectedHeld);
-                _elementsHolder.TryGetEnchantmentHandle(out var handle);
-                handle.Item2.Activate();
 
+                if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
+                handle.Item2.Activate();
+                handle.Item2.HandleHold(true);
+
+                // Position handle to current pointer (if available), otherwise snap to node.
+                Vector2 handlePos = nodeData.Item2.transform.position;
                 if (InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition))
                 {
                     var cameraPosition = _cameraHolderService.MainCamera.ScreenToWorldPoint(screenPosition);
-                    var worldPosition  = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
-                    handle.Item1.transform.position = worldPosition;
+                    handlePos = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
                 }
 
+                handle.Item1.transform.position = handlePos;
+
+                // Prepare initial temp line from the first node to the handle,
+                // so Drag-Collect can safely update/complete it even on the first frame.
+                _tempConnectionLines.Push(new TempNodeConnectionLine(
+                                              startPosition: nodeData.Item2.transform.position,
+                                              endPosition: handle.Item1.transform.position
+                                          ));
+
                 _currentPath.Push(nodeIndex);
+
+                Debug.Log("1");
             }
 
             // at least two nodes are now connected. handle is on the second node, this node state is 'ConnectedUnheld'
@@ -188,37 +208,35 @@ namespace Features.Enchantment
             }
         }
 
-        private void HandleColliderHoldCollect(InteractionEvent interactionEvent)
-        {
-            // the first node was selected. the handle spawned and was collected in the next frame.
-            if (_currentPath.Count != 1) return;
-
-            var colliders = interactionEvent.Targets;
-
-            EnchantmentPointerCollider handleCollider = null;
-            foreach (var collider in colliders.Span)
-                if (collider.TryGetComponent<EnchantmentPointerCollider>(out var enchantmentCollider)
-                    && enchantmentCollider.PointerType == EnchantmentPointerColliderType.Handle)
-                {
-                    handleCollider = enchantmentCollider;
-                    break;
-                }
-
-            if (handleCollider == null) return;
-
-            _elementsHolder.TryGetEnchantmentHandle(out var handle);
-            handle.Item2.HandleHold(true);
-
-            _elementsHolder.TryFindEnchantmentNodeByIndex(
-                index: _currentPath.Peek(),
-                result: out var fromNode
-            );
-
-            _tempConnectionLines.Push(new TempNodeConnectionLine(
-                                          startPosition: fromNode.Item2.transform.position,
-                                          endPosition: handle.Item1.transform.position
-                                      ));
-        }
+        // private void HandleColliderHoldCollect(InteractionEvent interactionEvent)
+        // {
+        //     // the first node was selected. the handle spawned and was collected in the next frame.
+        //     if (_currentPath.Count != 1) return;
+        //
+        //     var colliders = interactionEvent.Targets;
+        //
+        //     EnchantmentPointerCollider handleCollider = null;
+        //     foreach (var collider in colliders.Span)
+        //         if (collider.TryGetComponent<EnchantmentPointerCollider>(out var enchantmentCollider)
+        //             && enchantmentCollider.PointerType == EnchantmentPointerColliderType.Handle)
+        //         {
+        //             handleCollider = enchantmentCollider;
+        //             break;
+        //         }
+        //
+        //     if (handleCollider == null) return;
+        //
+        //     _elementsHolder.TryGetEnchantmentHandle(out var handle);
+        //     handle.Item2.HandleHold(true);
+        //
+        //     // Ensure there is a temp line (in case Hold-Start was skipped or overridden)
+        //     if (_tempConnectionLines.Count != 0) return;
+        //     _elementsHolder.TryFindEnchantmentNodeByIndex(index: _currentPath.Peek(), result: out var fromNode);
+        //     _tempConnectionLines.Push(new TempNodeConnectionLine(
+        //                                   startPosition: fromNode.Item2.transform.position,
+        //                                   endPosition: handle.Item1.transform.position
+        //                               ));
+        // }
 
         private void HandleColliderDragCollect(InteractionEvent interactionEvent)
         {
@@ -256,6 +274,13 @@ namespace Features.Enchantment
             toNode.Item3.SetState(EnchantmentNodeViewState.ConnectedHeld);
             fromNode.Item3.SetState(EnchantmentNodeViewState.Completed);
 
+            // Ensure a temp line exists; fast first drag may reach here before any push.
+            if (_tempConnectionLines.Count == 0)
+                _tempConnectionLines.Push(new TempNodeConnectionLine(
+                                              startPosition: fromNode.Item2.transform.position,
+                                              endPosition: handle.Item1.transform.position
+                                          ));
+
             var currentTempLine = _tempConnectionLines.Peek();
             currentTempLine.UpdateEndPosition(newEndPosition: toNode.Item2.transform.position);
 
@@ -270,12 +295,16 @@ namespace Features.Enchantment
             // the handle is spawned and held. since drag handles connections, no need to do it here.
             // but if there are no connections yet, and hold is released, we reset the path entirely.
             // releasing the handle should hide the handle.
-            if (_currentPath.Count < 1) return;
 
+            // Allow releasing the handle even when no nodes are in the path.
+
+            Debug.Log("2.1");
             if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
             if (!handle.Item2.IsHeld()) return;
 
             handle.Item2.HandleHold(false);
+
+            if (_currentPath.Count < 1) return;
 
             var lastConnectedNodeId = _currentPath.Peek();
             if (_elementsHolder.TryFindEnchantmentNodeByIndex(index: lastConnectedNodeId, result: out var node))
@@ -298,7 +327,22 @@ namespace Features.Enchantment
                     handle.Item1.transform.position = lastNode.Item2.transform.position;
             }
 
-            _tempConnectionLines.Pop();
+            // Safely pop temp line if exists
+            if (_tempConnectionLines.Count > 0)
+                _tempConnectionLines.Pop();
+
+            Debug.Log("2.2");
+        }
+
+        private void HandleColliderDragAction(InteractionEvent interactionEvent)
+        {
+            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
+            if (!InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition)) return;
+            if (!handle.Item2.IsHeld()) return;
+
+            var cameraPosition = _cameraHolderService.MainCamera.ScreenToWorldPoint(screenPosition);
+            var worldPosition  = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
+            handle.Item1.transform.position = worldPosition;
         }
 
         private bool TryGetNodeIndexByCollider(EnchantmentPointerCollider collider, out int nodeIndex)
@@ -323,21 +367,71 @@ namespace Features.Enchantment
             return false;
         }
 
+
         private bool IsConnectingLegal(int fromNodeId, int toNodeId)
         {
+            if (fromNodeId == toNodeId) return false;
+
             for (var i = 0; i < _layout.Connections.Count; i++)
             {
-                if ((_layout.Connections[i].NodeA.Index != fromNodeId ||
-                     _layout.Connections[i].NodeB.Index != toNodeId)
-                    &&
-                    (_layout.Connections[i].NodeA.Index != toNodeId ||
-                     _layout.Connections[i].NodeB.Index != fromNodeId)) continue;
-                if (_currentConnections.Contains(_layout.Connections[i]))
-                    return true;
+                var a = _layout.Connections[i].NodeA.Index;
+                var b = _layout.Connections[i].NodeB.Index;
+
+                // connection exists in the layout
+                if ((a == fromNodeId && b == toNodeId) || (a == toNodeId && b == fromNodeId))
+                {
+                    if (_currentPath.Count >= 2)
+                    {
+                        var pathArray = _currentPath.ToArray(); // LIFO: [last, ..., first]
+                        for (var j = 0; j < pathArray.Length - 1; j++)
+                        {
+                            var pathFromNodeId = pathArray[j];
+                            var pathToNodeId   = pathArray[j + 1];
+
+                            if ((pathFromNodeId == fromNodeId && pathToNodeId == toNodeId) ||
+                                (pathFromNodeId == toNodeId && pathToNodeId == fromNodeId))
+                                return false; // connection already exists in the path
+                        }
+                    }
+
+                    return true; // legal connection and not yet used
+                }
             }
 
-            return false;
+            return false; // no such connection in the layout
         }
+
+
+        // private bool IsConnectingLegal(int fromNodeId, int toNodeId)
+        // {
+        //     for (var i = 0; i < _layout.Connections.Count; i++)
+        //     {
+        //         // find the connection in the layout:
+        //         if (
+        //                 (_layout.Connections[i].NodeA.Index == fromNodeId &&
+        //                  _layout.Connections[i].NodeB.Index == toNodeId) ||
+        //                 (_layout.Connections[i].NodeA.Index == toNodeId &&
+        //                  _layout.Connections[i].NodeB.Index == fromNodeId)
+        //             )
+        //
+        //         {
+        //             // find if the path contains the connection:
+        //             for (var j = 0; j < _currentPath.Count - 1; j++)
+        //             {
+        //                 var pathFromNodeId = _currentPath.ToArray()[j];
+        //                 var pathToNodeId   = _currentPath.ToArray()[j + 1];
+        //
+        //                 if (
+        //                         (pathFromNodeId == fromNodeId && pathToNodeId == toNodeId) ||
+        //                         (pathFromNodeId == toNodeId && pathToNodeId == fromNodeId)
+        //                     )
+        //                     return false; // connection already exists in the path
+        //             }
+        //         }
+        //     }
+        //
+        //     return true;
+        // }
 
         internal class TempNodeConnectionLine
         {

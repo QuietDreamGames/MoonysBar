@@ -26,8 +26,6 @@ namespace Features.Enchantment.Presenters
 
         private void Update()
         {
-            base.OnUpdate(Time.deltaTime);
-
             if (!_wasActivatedLastFrame) return;
             _wasActivatedLastFrame = false;
             if (pointerCollider.Collider != null && pointerCollider.Collider is CircleCollider2D circleCollider)
@@ -45,7 +43,7 @@ namespace Features.Enchantment.Presenters
             if (pointerCollider.Collider == null ||
                 pointerCollider.Collider is not CircleCollider2D circleCollider) return;
             _pointerColliderDefaultRadius = circleCollider.radius;
-            circleCollider.radius         = _pointerColliderDefaultRadius * 30;
+            // circleCollider.radius         = _pointerColliderDefaultRadius * 30;
         }
 
         public void Deactivate()

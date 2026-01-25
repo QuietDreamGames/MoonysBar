@@ -12,15 +12,15 @@ namespace Features.Interaction.InteractionStates
 {
     public class DragInteractionState : IState, IUpdateHandler
     {
-        private readonly IMachine                          _stateMachine;
-        private readonly IInputEventBusFeed                _inputEventBusFeed;
-        private readonly InteractionHitRegistrator         _hitRegistrator;
         private readonly InteractionPointerCollisionBuffer _collisionBuffer;
+        private readonly InteractionHitRegistrator         _hitRegistrator;
+        private readonly IInputEventBusFeed                _inputEventBusFeed;
         private readonly IInteractionEventBusSink          _interactionEventBusSink;
 
-        private bool _isActive;
-
         private readonly PointerCollider[] _internalTargetCollidersBuffer = new PointerCollider[10];
+        private readonly IMachine          _stateMachine;
+
+        private bool _isActive;
 
         public DragInteractionState(
             IMachine                          stateMachine,
@@ -67,7 +67,8 @@ namespace Features.Interaction.InteractionStates
 
                 var colliderUpdates = _collisionBuffer.TryDetectUpdatedColliders(
                     newBuffer: newCollidersSpan,
-                    oldBuffer: oldCollidersSpan);
+                    oldBuffer: oldCollidersSpan
+                );
 
                 if (_interactionEventBusSink.SupportsCollects
                     && colliderUpdates.HasUpdates
@@ -81,11 +82,13 @@ namespace Features.Interaction.InteractionStates
                         _internalTargetCollidersBuffer[i] = newCollidersSpan[index];
                     }
 
-                    _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                        kind: InteractionKind.Drag,
-                        phase: InteractionPhase.Collect,
-                        targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
-                    ));
+                    _interactionEventBusSink.HandleInteraction(
+                        new InteractionEvent(
+                            kind: InteractionKind.Drag,
+                            phase: InteractionPhase.Collect,
+                            targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
+                        )
+                    );
                 }
 
                 if (_interactionEventBusSink.SupportsPrematureExits
@@ -100,11 +103,13 @@ namespace Features.Interaction.InteractionStates
                         _internalTargetCollidersBuffer[i] = oldCollidersSpan[index];
                     }
 
-                    _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                        kind: InteractionKind.Drag,
-                        phase: InteractionPhase.PrematureExit,
-                        targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
-                    ));
+                    _interactionEventBusSink.HandleInteraction(
+                        new InteractionEvent(
+                            kind: InteractionKind.Drag,
+                            phase: InteractionPhase.PrematureExit,
+                            targets: _internalTargetCollidersBuffer.AsMemory(start: 0, length: targetsCount)
+                        )
+                    );
                 }
             }
             else
@@ -115,11 +120,13 @@ namespace Features.Interaction.InteractionStates
                     case true when _collisionBuffer.IsEmpty(1):
                     {
                         if (_interactionEventBusSink.SupportsCollects)
-                            _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                                kind: InteractionKind.Drag,
-                                phase: InteractionPhase.Collect,
-                                target: newCollidersArray[0]
-                            ));
+                            _interactionEventBusSink.HandleInteraction(
+                                new InteractionEvent(
+                                    kind: InteractionKind.Drag,
+                                    phase: InteractionPhase.Collect,
+                                    target: newCollidersArray[0]
+                                )
+                            );
                         break;
                     }
                     // 2. there was a hit, and it is still there:
@@ -128,29 +135,35 @@ namespace Features.Interaction.InteractionStates
                         if (_collisionBuffer.FindFirstCollider(newCollidersArray)) return;
 
                         if (_interactionEventBusSink.SupportsPrematureExits)
-                            _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                                kind: InteractionKind.Drag,
-                                phase: InteractionPhase.PrematureExit,
-                                target: _collisionBuffer.CollidersBuffer[0]
-                            ));
+                            _interactionEventBusSink.HandleInteraction(
+                                new InteractionEvent(
+                                    kind: InteractionKind.Drag,
+                                    phase: InteractionPhase.PrematureExit,
+                                    target: _collisionBuffer.CollidersBuffer[0]
+                                )
+                            );
 
                         if (_interactionEventBusSink.SupportsCollects)
-                            _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                                kind: InteractionKind.Drag,
-                                phase: InteractionPhase.Collect,
-                                target: newCollidersArray[0]
-                            ));
+                            _interactionEventBusSink.HandleInteraction(
+                                new InteractionEvent(
+                                    kind: InteractionKind.Drag,
+                                    phase: InteractionPhase.Collect,
+                                    target: newCollidersArray[0]
+                                )
+                            );
                         break;
                     }
                     // 3. there was a hit and now there is none:
                     case false when !_collisionBuffer.IsEmpty(1):
                     {
                         if (_interactionEventBusSink.SupportsPrematureExits)
-                            _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                                kind: InteractionKind.Drag,
-                                phase: InteractionPhase.PrematureExit,
-                                target: _collisionBuffer.CollidersBuffer[0]
-                            ));
+                            _interactionEventBusSink.HandleInteraction(
+                                new InteractionEvent(
+                                    kind: InteractionKind.Drag,
+                                    phase: InteractionPhase.PrematureExit,
+                                    target: _collisionBuffer.CollidersBuffer[0]
+                                )
+                            );
                         break;
                     }
                 }
@@ -164,19 +177,41 @@ namespace Features.Interaction.InteractionStates
             if (_interactionEventBusSink.SupportsMultipleHits)
             {
                 if (_hitRegistrator.TryHitAllPointerColliders(out var pointerColliders))
-                    _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                        kind: InteractionKind.Drag,
-                        phase: InteractionPhase.End,
-                        targets: pointerColliders.AsMemory()
-                    ));
+                    _interactionEventBusSink.HandleInteraction(
+                        new InteractionEvent(
+                            kind: InteractionKind.Drag,
+                            phase: InteractionPhase.End,
+                            targets: pointerColliders.AsMemory()
+                        )
+                    );
+                else
+                    _interactionEventBusSink.HandleInteraction(
+                        new InteractionEvent(
+                            kind: InteractionKind.Drag,
+                            phase: InteractionPhase.End,
+                            targets: null
+                        )
+                    );
             }
             else if (_hitRegistrator.TryHitPointerCollider(out var pointerCollider))
             {
-                _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                    kind: InteractionKind.Drag,
-                    phase: InteractionPhase.End,
-                    target: pointerCollider
-                ));
+                _interactionEventBusSink.HandleInteraction(
+                    new InteractionEvent(
+                        kind: InteractionKind.Drag,
+                        phase: InteractionPhase.End,
+                        target: pointerCollider
+                    )
+                );
+            }
+            else
+            {
+                _interactionEventBusSink.HandleInteraction(
+                    new InteractionEvent(
+                        kind: InteractionKind.Drag,
+                        phase: InteractionPhase.End,
+                        target: null
+                    )
+                );
             }
 
             _stateMachine.Enter<IdleInteractionState>();
@@ -186,19 +221,25 @@ namespace Features.Interaction.InteractionStates
         {
             if (_collisionBuffer.IsEmpty(1)) return;
             if (_interactionEventBusSink.SupportsMultipleHits)
-                _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                    kind: InteractionKind.Drag,
-                    phase: InteractionPhase.Action,
-                    targets: _collisionBuffer.CollidersBuffer.AsMemory(start: 0, length: _collisionBuffer.FindLength()),
-                    delta: delta
-                ));
+                _interactionEventBusSink.HandleInteraction(
+                    new InteractionEvent(
+                        kind: InteractionKind.Drag,
+                        phase: InteractionPhase.Action,
+                        targets: _collisionBuffer.CollidersBuffer.AsMemory(
+                            start: 0, length: _collisionBuffer.FindLength()
+                        ),
+                        delta: delta
+                    )
+                );
             else
-                _interactionEventBusSink.HandleInteraction(new InteractionEvent(
-                    kind: InteractionKind.Drag,
-                    phase: InteractionPhase.Action,
-                    target: _collisionBuffer.CollidersBuffer[0],
-                    delta: delta
-                ));
+                _interactionEventBusSink.HandleInteraction(
+                    new InteractionEvent(
+                        kind: InteractionKind.Drag,
+                        phase: InteractionPhase.Action,
+                        target: _collisionBuffer.CollidersBuffer[0],
+                        delta: delta
+                    )
+                );
 
 
             // SUGGESTION: there is a chance we want collects and exits to be assumed before the update was triggered.
