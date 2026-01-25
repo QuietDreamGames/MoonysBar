@@ -62,14 +62,12 @@ namespace Features.Enchantment.Views
 
         public void Activate()
         {
-            // Show handle visual
-            Presenter.ShowHandle();
+            Presenter.Deactivate();
         }
 
         public void Deactivate()
         {
-            // Hide handle visual
-            Presenter.HideHandle();
+            Presenter.Activate();
         }
 
         public bool IsHeld()

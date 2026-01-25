@@ -60,7 +60,7 @@ namespace Features.Input
 
         private void PointerDragFired(Vector2 delta)
         {
-            // Debug.Log($"Pointer Drag Fired with delta: {delta}");
+            Debug.Log($"Pointer Drag Fired with delta: {delta}");
         }
 
         private void PointerDragEndFired()

@@ -11,7 +11,7 @@ namespace Features.Input.PointerStates
         private readonly IInputDispatcher   _inputDispatcher;
         private readonly IInputEventBusSink _inputEventBus;
 
-        private Vector2 _totalMoveDelta;
+        // private Vector2 _totalMoveDelta;
 
         public HoldPointerState(
             IMachine           stateMachine,
@@ -26,7 +26,7 @@ namespace Features.Input.PointerStates
 
         public void Enter()
         {
-            _totalMoveDelta                         =  Vector2.zero;
+            // _totalMoveDelta                         =  Vector2.zero;
             _inputDispatcher.OnPointerReleaseAction += OnPointerRelease;
             _inputDispatcher.OnPointerMoveAction    += OnPointerMove;
         }
@@ -45,8 +45,8 @@ namespace Features.Input.PointerStates
 
         private void OnPointerMove(InputAction.CallbackContext context, Vector2 delta)
         {
-            _totalMoveDelta += delta;
-            if (_totalMoveDelta.magnitude < 1.5) return;
+            // _totalMoveDelta += delta;
+            // if (_totalMoveDelta.magnitude < 1.5) return;
 
             _stateMachine.Enter<DragPointerState>();
             _inputEventBus.PointerDragFire(delta);
