@@ -44,7 +44,7 @@ namespace Features.Enchantment
             }
 
             var enchantmentHandle = _elementsFactory.CreateEnchantmentHandle();
-            enchantmentHandle.Item2.Hide();
+            enchantmentHandle.Item2.Deactivate();
             _elementsHolder.SetEnchantmentHandle(presenter: enchantmentHandle.Item1, view: enchantmentHandle.Item2);
 
             _enchantmentPathController.SetLayout(layout);

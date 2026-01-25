@@ -60,13 +60,13 @@ namespace Features.Enchantment.Views
         public event Action OnHoverEnter;
         public event Action OnHoverExit;
 
-        public void Show()
+        public void Activate()
         {
             // Show handle visual
             Presenter.ShowHandle();
         }
 
-        public void Hide()
+        public void Deactivate()
         {
             // Hide handle visual
             Presenter.HideHandle();

@@ -13,40 +13,6 @@ namespace Features.Interaction
         private readonly Dictionary<InteractionPhase, List<Subscriber>> _subsByPhase
             = new();
 
-        public bool SupportsMultipleHits   => CheckMultipleHitsSubscribers();
-        public bool SupportsPrematureExits => CheckPrematureExitSubscribers();
-        public bool SupportsCollects       => CheckCollectSubscribers();
-
-        private bool CheckMultipleHitsSubscribers()
-        {
-            foreach (var subs in _subsByPhase.Values)
-            foreach (var sub in subs)
-                if (sub.SupportsMultipleHits)
-                    return true;
-
-            return false;
-        }
-
-        private bool CheckPrematureExitSubscribers()
-        {
-            return _subsByPhase.TryGetValue(key: InteractionPhase.PrematureExit, value: out var list) && list.Count > 0;
-        }
-
-        private bool CheckCollectSubscribers()
-        {
-            return _subsByPhase.TryGetValue(key: InteractionPhase.Collect, value: out var list) && list.Count > 0;
-        }
-
-        public void HandleInteraction(InteractionEvent interactionEvent)
-        {
-            if (!_subsByPhase.TryGetValue(key: interactionEvent.Phase, value: out var bucket))
-                return;
-
-            foreach (var s in bucket)
-                if ((s.Kinds & interactionEvent.Kind) != 0)
-                    s.Handler(interactionEvent);
-        }
-
         public IDisposable Subscribe(
             InteractionKind          kinds,
             InteractionPhase         phases,
@@ -89,12 +55,46 @@ namespace Features.Interaction
             );
         }
 
+        public bool SupportsMultipleHits   => CheckMultipleHitsSubscribers();
+        public bool SupportsPrematureExits => CheckPrematureExitSubscribers();
+        public bool SupportsCollects       => CheckCollectSubscribers();
+
+        public void HandleInteraction(InteractionEvent interactionEvent)
+        {
+            if (!_subsByPhase.TryGetValue(key: interactionEvent.Phase, value: out var bucket))
+                return;
+
+            foreach (var s in bucket)
+                if ((s.Kinds & interactionEvent.Kind) != 0)
+                    s.Handler(interactionEvent);
+        }
+
+        private bool CheckMultipleHitsSubscribers()
+        {
+            foreach (var subs in _subsByPhase.Values)
+                foreach (var sub in subs)
+                    if (sub.SupportsMultipleHits)
+                        return true;
+
+            return false;
+        }
+
+        private bool CheckPrematureExitSubscribers()
+        {
+            return _subsByPhase.TryGetValue(key: InteractionPhase.PrematureExit, value: out var list) && list.Count > 0;
+        }
+
+        private bool CheckCollectSubscribers()
+        {
+            return _subsByPhase.TryGetValue(key: InteractionPhase.Collect, value: out var list) && list.Count > 0;
+        }
+
         private sealed class Subscriber
         {
+            public Action<InteractionEvent> Handler;
             public InteractionKind          Kinds;
             public InteractionPhase         Phases;
             public bool                     SupportsMultipleHits;
-            public Action<InteractionEvent> Handler;
         }
     }
 }

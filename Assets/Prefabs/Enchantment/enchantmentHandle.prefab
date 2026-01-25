@@ -48,6 +48,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isDebugMode: 0
   spriteRenderer: {fileID: 7975354036473814054}
+  pointerCollider: {fileID: 4621402900597607688}
 --- !u!212 &7975354036473814054
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -171,7 +172,7 @@ CircleCollider2D:
   m_CompositeOperation: 0
   m_CompositeOrder: 0
   m_Offset: {x: 0, y: 0}
-  m_Radius: 1
+  m_Radius: 0.5
 --- !u!114 &4621402900597607688
 MonoBehaviour:
   m_ObjectHideFlags: 0
