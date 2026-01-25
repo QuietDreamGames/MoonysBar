@@ -4,8 +4,6 @@ using Features.FiniteStateMachine;
 using Features.FiniteStateMachine.Interfaces;
 using Features.Input.Interfaces;
 using Features.Input.PointerStates;
-using Features.TimeSystem.Interfaces;
-using Features.TimeSystem.Interfaces.Injected;
 using JetBrains.Annotations;
 using VContainer.Unity;
 
@@ -16,14 +14,15 @@ namespace Features.Input
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InputPointerStateMachine(
             IInputDispatcher        inputDispatcher,
-            IInputEventBusSink      inputEventBusSink,
-            ITimeSystem             timeSystem,
-            IUpdateProvider         updateProvider,
-            ITransientTimeCollector transientTimeCollector
+            IInputEventBusSink      inputEventBusSink
         ) : base(new Dictionary<Type, IState>())
         {
             States.Add(key: typeof(IdlePointerState),
-                value: new IdlePointerState(stateMachine: this, inputSystem: inputDispatcher));
+                value: new IdlePointerState(
+                    stateMachine: this,
+                    inputDispatcher: inputDispatcher,
+                    inputEventBus: inputEventBusSink
+                ));
             States.Add(key: typeof(HoldPointerState), value: new HoldPointerState(
                 stateMachine: this,
                 inputDispatcher: inputDispatcher,
@@ -35,22 +34,8 @@ namespace Features.Input
                 inputEventBus: inputEventBusSink
             ));
 
-            var pendingPointerState = new PendingPointerState(
-                stateMachine: this,
-                inputDispatcher: inputDispatcher,
-                inputEventBus: inputEventBusSink
-            );
-
-            States.Add(key: typeof(PendingPointerState), value: pendingPointerState);
-            transientTimeCollector.UpdateHandlers.Add(pendingPointerState);
-
             // not implemented
-            States.Add(key: typeof(MovePointerState), value: new MovePointerState());
             States.Add(key: typeof(HoverPointerState), value: new HoverPointerState(inputDispatcher));
-
-            timeSystem.Subscribe(transientTimeCollector);
-            timeSystem.SetUpdateProvider(updateProvider);
-            timeSystem.Initialize();
         }
 
         public void Start()
