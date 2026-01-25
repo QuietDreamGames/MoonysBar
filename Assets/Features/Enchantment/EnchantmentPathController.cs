@@ -61,21 +61,22 @@ namespace Features.Enchantment
 
         public void OnUpdate(float deltaTime)
         {
-            if (_tempConnectionLines == null || _tempConnectionLines.Count == 0) return;
+            if (_tempConnectionLines != null)
+                foreach (var tempLine in _tempConnectionLines)
+                    Debug.DrawLine(
+                        start: tempLine.StartPosition,
+                        end: tempLine.EndPosition,
+                        color: Color.green
+                    );
 
-            foreach (var tempLine in _tempConnectionLines)
-                Debug.DrawLine(
-                    start: tempLine.StartPosition,
-                    end: tempLine.EndPosition,
-                    color: Color.green
-                );
-
-            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle) && handle.Item2.IsHeld()) return;
+            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
             if (!InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition)) return;
+            if (!handle.Item2.IsHeld()) return;
 
             var cameraPosition = _cameraHolderService.MainCamera.ScreenToWorldPoint(screenPosition);
             var worldPosition  = new Vector2(x: cameraPosition.x, y: cameraPosition.y);
             handle.Item1.transform.position = worldPosition;
+
 
             var currentTempLine = _tempConnectionLines.Peek();
             currentTempLine.UpdateEndPosition(newEndPosition: worldPosition);
@@ -90,7 +91,7 @@ namespace Features.Enchantment
             _tempConnectionLines = new Stack<TempNodeConnectionLine>();
 
             if (_elementsHolder.TryGetEnchantmentHandle(out var handle))
-                handle.Item2.Hide();
+                handle.Item2.Deactivate();
             else
                 Debug.LogError("Enchantment Handle not found in Elements Holder.");
         }
@@ -135,7 +136,7 @@ namespace Features.Enchantment
 
                 nodeData.Item3.SetState(EnchantmentNodeViewState.UnconnectedHeld);
                 _elementsHolder.TryGetEnchantmentHandle(out var handle);
-                handle.Item2.Show();
+                handle.Item2.Activate();
 
                 if (InputUtils.TryGetPrimaryPointerScreenPosition(out var screenPosition))
                 {
@@ -189,7 +190,7 @@ namespace Features.Enchantment
 
         private void HandleColliderHoldCollect(InteractionEvent interactionEvent)
         {
-            // first node was selected. the handle spawned and was collected in next frame.
+            // the first node was selected. the handle spawned and was collected in the next frame.
             if (_currentPath.Count != 1) return;
 
             var colliders = interactionEvent.Targets;
@@ -206,7 +207,6 @@ namespace Features.Enchantment
             if (handleCollider == null) return;
 
             _elementsHolder.TryGetEnchantmentHandle(out var handle);
-            handle.Item2.Show();
             handle.Item2.HandleHold(true);
 
             _elementsHolder.TryFindEnchantmentNodeByIndex(
@@ -224,51 +224,51 @@ namespace Features.Enchantment
         {
             // a node is already selected. handle state is unknown.
             // if handle is held, and we collected a new legal node, we build a path between first node and this node.
-            if (_currentPath.Count >= 1)
-            {
-                var colliders = interactionEvent.Targets;
+            if (_currentPath.Count < 1) return;
 
-                EnchantmentPointerCollider nodeCollider = null;
-                foreach (var collider in colliders.Span)
-                    if (collider.TryGetComponent<EnchantmentPointerCollider>(out var enchantmentCollider)
-                        && enchantmentCollider.PointerType == EnchantmentPointerColliderType.Node)
-                    {
-                        nodeCollider = enchantmentCollider;
-                        break;
-                    }
+            var colliders = interactionEvent.Targets;
 
-                if (nodeCollider == null) return;
-                if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
-                if (!handle.Item2.IsHeld()) return;
-                if (!TryGetNodeIndexByCollider(collider: nodeCollider, nodeIndex: out var nodeIndex)) return;
+            EnchantmentPointerCollider nodeCollider = null;
+            foreach (var collider in colliders.Span)
+                if (collider.TryGetComponent<EnchantmentPointerCollider>(out var enchantmentCollider)
+                    && enchantmentCollider.PointerType == EnchantmentPointerColliderType.Node)
+                {
+                    nodeCollider = enchantmentCollider;
+                    break;
+                }
 
-                var fromNodeId = _currentPath.Peek();
-                var toNodeId   = nodeIndex;
+            if (nodeCollider == null) return;
+            if (!_elementsHolder.TryGetEnchantmentHandle(out var handle)) return;
+            if (!handle.Item2.IsHeld()) return;
+            if (!TryGetNodeIndexByCollider(collider: nodeCollider, nodeIndex: out var nodeIndex)) return;
 
-                if (!IsConnectingLegal(fromNodeId: fromNodeId, toNodeId: toNodeId)) return;
+            var fromNodeId = _currentPath.Peek();
+            var toNodeId   = nodeIndex;
 
-                // fixate connection
-                _currentPath.Push(nodeIndex);
+            if (!IsConnectingLegal(fromNodeId: fromNodeId, toNodeId: toNodeId)) return;
 
-                if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: toNodeId, result: out var toNode)) return;
-                if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: fromNodeId, result: out var fromNode)) return;
+            // fixate connection
+            _currentPath.Push(nodeIndex);
 
-                toNode.Item3.SetState(EnchantmentNodeViewState.ConnectedHeld);
-                fromNode.Item3.SetState(EnchantmentNodeViewState.Completed);
+            if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: toNodeId, result: out var toNode)) return;
+            if (!_elementsHolder.TryFindEnchantmentNodeByIndex(index: fromNodeId, result: out var fromNode)) return;
 
-                var currentTempLine = _tempConnectionLines.Peek();
-                currentTempLine.UpdateEndPosition(newEndPosition: toNode.Item2.transform.position);
+            toNode.Item3.SetState(EnchantmentNodeViewState.ConnectedHeld);
+            fromNode.Item3.SetState(EnchantmentNodeViewState.Completed);
 
-                _tempConnectionLines.Push(new TempNodeConnectionLine(
-                                              startPosition: toNode.Item2.transform.position,
-                                              endPosition: handle.Item1.transform.position
-                                          ));
-            }
+            var currentTempLine = _tempConnectionLines.Peek();
+            currentTempLine.UpdateEndPosition(newEndPosition: toNode.Item2.transform.position);
+
+            _tempConnectionLines.Push(new TempNodeConnectionLine(
+                                          startPosition: toNode.Item2.transform.position,
+                                          endPosition: handle.Item1.transform.position
+                                      ));
         }
 
         private void HandleColliderHoldOrDragEnd(InteractionEvent interactionEvent)
         {
             // the handle is spawned and held. since drag handles connections, no need to do it here.
+            // but if there are no connections yet, and hold is released, we reset the path entirely.
             // releasing the handle should hide the handle.
             if (_currentPath.Count < 1) return;
 
@@ -276,7 +276,6 @@ namespace Features.Enchantment
             if (!handle.Item2.IsHeld()) return;
 
             handle.Item2.HandleHold(false);
-            handle.Item2.Hide();
 
             var lastConnectedNodeId = _currentPath.Peek();
             if (_elementsHolder.TryFindEnchantmentNodeByIndex(index: lastConnectedNodeId, result: out var node))
@@ -285,6 +284,18 @@ namespace Features.Enchantment
                     node.Item3.SetState(EnchantmentNodeViewState.UnconnectedIdle);
                 else if (node.Item3.GetState() == EnchantmentNodeViewState.ConnectedHeld)
                     node.Item3.SetState(EnchantmentNodeViewState.ConnectedIdle);
+            }
+
+            if (_currentPath.Count == 1)
+            {
+                handle.Item2.Deactivate();
+                _currentPath.Clear();
+            }
+            else
+            {
+                var lastNodeId = _currentPath.Peek();
+                if (_elementsHolder.TryFindEnchantmentNodeByIndex(index: lastNodeId, result: out var lastNode))
+                    handle.Item1.transform.position = lastNode.Item2.transform.position;
             }
 
             _tempConnectionLines.Pop();
@@ -321,7 +332,7 @@ namespace Features.Enchantment
                     &&
                     (_layout.Connections[i].NodeA.Index != toNodeId ||
                      _layout.Connections[i].NodeB.Index != fromNodeId)) continue;
-                if (!_currentConnections.Contains(_layout.Connections[i]))
+                if (_currentConnections.Contains(_layout.Connections[i]))
                     return true;
             }
 
