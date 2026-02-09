@@ -22,8 +22,8 @@ namespace Features.CameraSystem
 
         public void ChangeMainCamera(Camera camera)
         {
-            _interactionCameraHolder.SetInteractionCamera(MainCamera);
             _mainCamera = camera;
+            _interactionCameraHolder.SetInteractionCamera(MainCamera);
         }
     }
 }
