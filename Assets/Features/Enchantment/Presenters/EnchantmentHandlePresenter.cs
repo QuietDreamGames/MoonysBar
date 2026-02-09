@@ -31,22 +31,22 @@ namespace Features.Enchantment.Presenters
 
         public void Activate()
         {
+            spriteRenderer.enabled           = true;
+            pointerCollider.Collider.enabled = true;
+        }
+
+        public void Deactivate()
+        {
             spriteRenderer.enabled           = false;
             pointerCollider.Collider.enabled = false;
 
             // kind of a hack, but there is a timing issue where if we don't delay this by a frame,
             // the pointer might not be collected
-            _wasActivatedLastFrame = true;
-            if (pointerCollider.Collider == null ||
-                pointerCollider.Collider is not CircleCollider2D circleCollider) return;
-            _pointerColliderDefaultRadius = circleCollider.radius;
+            // _wasActivatedLastFrame = true;
+            // if (pointerCollider.Collider == null ||
+            //     pointerCollider.Collider is not CircleCollider2D circleCollider) return;
+            // _pointerColliderDefaultRadius = circleCollider.radius;
             // circleCollider.radius         = _pointerColliderDefaultRadius * 30;
-        }
-
-        public void Deactivate()
-        {
-            spriteRenderer.enabled           = true;
-            pointerCollider.Collider.enabled = true;
         }
     }
 }

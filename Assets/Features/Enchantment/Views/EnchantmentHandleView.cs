@@ -62,12 +62,12 @@ namespace Features.Enchantment.Views
 
         public void Activate()
         {
-            Presenter.Deactivate();
+            Presenter.Activate();
         }
 
         public void Deactivate()
         {
-            Presenter.Activate();
+            Presenter.Deactivate();
         }
 
         public bool IsHeld()
