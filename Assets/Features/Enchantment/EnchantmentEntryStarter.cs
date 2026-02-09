@@ -1,13 +1,12 @@
 using Features.Enchantment.Interfaces;
 using Features.TimeSystem.Interfaces;
-using Features.TimeSystem.Interfaces.Handlers;
 using Features.TimeSystem.Interfaces.Injected;
 using UnityEngine;
 using VContainer;
 
 namespace Features.Enchantment
 {
-    public class EnchantmentEntryStarter : MonoBehaviour, IUpdateHandler
+    public class EnchantmentEntryStarter : MonoBehaviour
     {
         [SerializeField] private EnchantmentNodesLayoutScriptableObject layoutScriptableObject;
 
@@ -22,7 +21,8 @@ namespace Features.Enchantment
 
         private void Start()
         {
-            _timeCollector.UpdateHandlers.Add(this);
+            _timeCollector.UpdateHandlers.Add(_elementsHolder);
+            _timeCollector.UpdateHandlers.Add(_enchantmentPathController);
             _timeSystem.Subscribe(_timeCollector);
 
             var layout = layoutScriptableObject.GetLayout();
@@ -48,12 +48,6 @@ namespace Features.Enchantment
             _elementsHolder.SetEnchantmentHandle(presenter: enchantmentHandle.Item1, view: enchantmentHandle.Item2);
 
             _enchantmentPathController.SetLayout(layout);
-        }
-
-        public void OnUpdate(float deltaTime)
-        {
-            _elementsHolder.OnUpdate(deltaTime);
-            _enchantmentPathController.OnUpdate(deltaTime);
         }
     }
 }

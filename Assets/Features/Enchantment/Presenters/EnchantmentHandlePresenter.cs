@@ -15,22 +15,19 @@ namespace Features.Enchantment.Presenters
         // {
         //     base.OnUpdate(deltaTime);
         //
-        //     if (_wasActivatedLastFrame)
-        //     {
-        //         _wasActivatedLastFrame = false;
-        //         if (pointerCollider.Collider != null && pointerCollider.Collider is CircleCollider2D circleCollider)
-        //             circleCollider.radius = _pointerColliderDefaultRadius;
-        //         return;
-        //     }
+        //     if (!_wasActivatedLastFrame) return;
+        //     _wasActivatedLastFrame = false;
+        //     if (pointerCollider.Collider != null && pointerCollider.Collider is CircleCollider2D circleCollider)
+        //         circleCollider.radius = _pointerColliderDefaultRadius;
         // }
-
-        private void Update()
-        {
-            if (!_wasActivatedLastFrame) return;
-            _wasActivatedLastFrame = false;
-            if (pointerCollider.Collider != null && pointerCollider.Collider is CircleCollider2D circleCollider)
-                circleCollider.radius = _pointerColliderDefaultRadius;
-        }
+        //
+        // private void Update()
+        // {
+        //     if (!_wasActivatedLastFrame) return;
+        //     _wasActivatedLastFrame = false;
+        //     if (pointerCollider.Collider != null && pointerCollider.Collider is CircleCollider2D circleCollider)
+        //         circleCollider.radius = _pointerColliderDefaultRadius;
+        // }
 
         public void Activate()
         {
