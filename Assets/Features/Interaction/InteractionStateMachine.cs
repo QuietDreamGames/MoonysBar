@@ -59,7 +59,6 @@ namespace Features.Interaction
                     transientTimeCollector.UpdateHandlers.Add(updatableState);
 
             timeSystem.Subscribe(transientTimeCollector);
-            timeSystem.Initialize();
         }
 
         public void Start()
