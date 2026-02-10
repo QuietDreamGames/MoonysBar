@@ -23,36 +23,35 @@ namespace Features.Interaction
             InteractionHitRegistrator         hitRegistrator,
             InteractionPointerCollisionBuffer collisionBuffer,
             ITimeSystem                       timeSystem,
-            IUpdateProvider                   updateProvider,
             ITransientTimeCollector           transientTimeCollector
         ) : base(new Dictionary<Type, IState>())
         {
             States.Add(key: typeof(IdleInteractionState),
-                       value: new IdleInteractionState(
-                           stateMachine: this,
-                           inputEventBusFeed: inputEventBusFeed,
-                           hitRegistrator: hitRegistrator,
-                           collisionBuffer: collisionBuffer,
-                           interactionEventBusSink: interactionEventBusSink
-                       ));
+                value: new IdleInteractionState(
+                    stateMachine: this,
+                    inputEventBusFeed: inputEventBusFeed,
+                    hitRegistrator: hitRegistrator,
+                    collisionBuffer: collisionBuffer,
+                    interactionEventBusSink: interactionEventBusSink
+                ));
 
             States.Add(key: typeof(HoldInteractionState),
-                       value: new HoldInteractionState(
-                           stateMachine: this,
-                           inputEventBusFeed: inputEventBusFeed,
-                           hitRegistrator: hitRegistrator,
-                           collisionBuffer: collisionBuffer,
-                           interactionEventBusSink: interactionEventBusSink
-                       ));
+                value: new HoldInteractionState(
+                    stateMachine: this,
+                    inputEventBusFeed: inputEventBusFeed,
+                    hitRegistrator: hitRegistrator,
+                    collisionBuffer: collisionBuffer,
+                    interactionEventBusSink: interactionEventBusSink
+                ));
 
             States.Add(key: typeof(DragInteractionState),
-                       value: new DragInteractionState(
-                           stateMachine: this,
-                           inputEventBusFeed: inputEventBusFeed,
-                           hitRegistrator: hitRegistrator,
-                           collisionBuffer: collisionBuffer,
-                           interactionEventBusSink: interactionEventBusSink
-                       ));
+                value: new DragInteractionState(
+                    stateMachine: this,
+                    inputEventBusFeed: inputEventBusFeed,
+                    hitRegistrator: hitRegistrator,
+                    collisionBuffer: collisionBuffer,
+                    interactionEventBusSink: interactionEventBusSink
+                ));
 
             // iterate through states and add them to the time system
             foreach (var state in States.Values)
@@ -60,7 +59,6 @@ namespace Features.Interaction
                     transientTimeCollector.UpdateHandlers.Add(updatableState);
 
             timeSystem.Subscribe(transientTimeCollector);
-            timeSystem.SetUpdateProvider(updateProvider);
             timeSystem.Initialize();
         }
 

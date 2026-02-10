@@ -38,7 +38,6 @@ namespace Features.Input
 
         public void Stop()
         {
-            _clickTimer     = 0f;
             _isTimerRunning = false;
         }
 

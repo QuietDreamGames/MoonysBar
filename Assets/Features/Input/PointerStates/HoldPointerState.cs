@@ -41,12 +41,11 @@ namespace Features.Input.PointerStates
 
         private void OnPointerRelease(InputAction.CallbackContext context)
         {
+            var isAboveClickThreshold = _clickTimer.IsTimerAboveClickThreshold();
             _clickTimer.Stop();
-
             _stateMachine.Enter<IdlePointerState>();
             _inputEventBus.PointerHoldEndFire();
-
-            if (!_clickTimer.IsTimerAboveClickThreshold())
+            if (!isAboveClickThreshold)
                 _inputEventBus.PointerClickFire();
         }
 

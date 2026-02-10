@@ -35,7 +35,7 @@ namespace Features.MixMinigame.Views
             {
                 return base.ResolveAnimation(animationName: animationName, ct: ct);
             }
-            catch (ArgumentOutOfRangeException _)
+            catch (ArgumentOutOfRangeException)
             {
                 if (animationName == "Drifting")
                     return MorphAnimationTweenToUniTask(tween: DriftingTween(), ct: ct);
