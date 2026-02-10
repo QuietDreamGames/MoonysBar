@@ -13,8 +13,9 @@ namespace Features.Input
     {
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public InputPointerStateMachine(
-            IInputDispatcher        inputDispatcher,
-            IInputEventBusSink      inputEventBusSink
+            IInputDispatcher   inputDispatcher,
+            IInputEventBusSink inputEventBusSink,
+            IInputClickTimer   clickTimer
         ) : base(new Dictionary<Type, IState>())
         {
             States.Add(key: typeof(IdlePointerState),
@@ -26,12 +27,14 @@ namespace Features.Input
             States.Add(key: typeof(HoldPointerState), value: new HoldPointerState(
                 stateMachine: this,
                 inputDispatcher: inputDispatcher,
-                inputEventBus: inputEventBusSink
+                inputEventBus: inputEventBusSink,
+                clickTimer: clickTimer
             ));
             States.Add(key: typeof(DragPointerState), value: new DragPointerState(
                 stateMachine: this,
                 inputDispatcher: inputDispatcher,
-                inputEventBus: inputEventBusSink
+                inputEventBus: inputEventBusSink,
+                clickTimer: clickTimer
             ));
 
             // not implemented
