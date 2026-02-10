@@ -3,21 +3,21 @@ using System.Threading;
 using Cysharp.Threading.Tasks;
 using DG.Tweening;
 using Features.MixMinigame.Datas;
-using Features.MixMinigame.ViewModels;
+using Features.MixMinigame.Views;
 using UnityEngine;
 
-namespace Features.MixMinigame.Views
+namespace Features.MixMinigame.Presenters
 {
-    public class MixGameTileDriftingView : MixGameTileClickableView
+    public class MixGameTileDriftingPresenter : MixGameTileClickablePresenter
     {
         private float _driftFinalPositionY;
 
-        public override void Initialize(MixGameTileViewModel tileViewModel)
+        public override void Initialize(MixGameTileView tileView)
         {
-            base.Initialize(tileViewModel);
+            base.Initialize(tileView);
 
             var driftFinalRelativePositionY =
-                ((MixGameDriftingSequenceElementData)tileViewModel.TileModel.Data)
+                ((MixGameDriftingSequenceElementData)tileView.TileModel.Data)
                 .DriftFinalPositionY;
 
             var convertedPos =
