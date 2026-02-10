@@ -1,108 +1,47 @@
 using System;
-using System.Threading;
-using Cysharp.Threading.Tasks;
-using Features.MixMinigame.ViewModels;
-using Features.View;
-using TMPro;
-using UnityEngine;
-using VContainer;
+using Features.MixMinigame.Models;
 
 namespace Features.MixMinigame.Views
 {
-    public abstract class MixGameTileView : TweenedPresenter
+    public abstract class MixGameTileView : IDisposable
     {
-        [SerializeField] protected TextMeshPro    textMeshVisualNumber;
-        [SerializeField] protected ParticleSystem hitStatusParticleSystem;
+        protected bool IsProcessed;
 
-        [SerializeField] private Color hitPSColor;
-        [SerializeField] private Color missPSColor;
-
-        [Inject] protected readonly MixGamePlayingFieldService MixGamePlayingFieldService;
-
-        public override void OnUpdate(float deltaTime)
+        public MixGameTileView(MixGameTileModel tileModel)
         {
-            base.OnUpdate(deltaTime);
-
-            if (hitStatusParticleSystem.gameObject.activeInHierarchy)
-                hitStatusParticleSystem.Simulate(t: deltaTime, withChildren: true, restart: false,
-                    fixedTimeStep: false);
+            TileModel = tileModel;
         }
 
-        public event Action OnReturnToPool;
+        public MixGameTileModel TileModel { get; }
 
-        public virtual void Initialize(MixGameTileViewModel tileViewModel)
+        public void Dispose()
         {
-            base.Initialize();
-
-            tileViewModel.OnHit  += OnHit;
-            tileViewModel.OnMiss += OnMiss;
-            tileViewModel.OnFail += OnFail;
-
-            textMeshVisualNumber.text = tileViewModel.TileModel.Data.VisualNumber.ToString();
-
-            transform.localPosition = MixGamePlayingFieldService.ConvertRelativeToWorldPosition(
-                tileViewModel.TileModel.Data.InitialPosition);
+            OnHit  = null;
+            OnMiss = null;
+            OnFail = null;
         }
 
-        public void ReturnToPool()
+        public event Action OnHit;
+        public event Action OnMiss;
+        public event Action OnFail;
+
+        public abstract void CheckForMiss(float levelTimerValue);
+
+        public abstract void HandleInteraction(float levelTimerValue, bool isHeld = false);
+
+        protected void TriggerHit()
         {
-            OnReturnToPool?.Invoke();
-            OnReturnToPool = null;
-
-            ClearAnimations();
-
-            hitStatusParticleSystem.gameObject.SetActive(false);
-            hitStatusParticleSystem.Stop(withChildren: true,
-                stopBehavior: ParticleSystemStopBehavior.StopEmittingAndClear);
+            OnHit?.Invoke();
         }
 
-        protected virtual void OnHit()
+        protected void TriggerMiss()
         {
-            // CAREFUL: movable ignores it on hold begin
-
-            hitStatusParticleSystem.gameObject.SetActive(true);
-            var main = hitStatusParticleSystem.main;
-            main.startColor = hitPSColor;
-            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
+            OnMiss?.Invoke();
         }
 
-        protected virtual void OnMiss()
+        protected void TriggerFail()
         {
-            hitStatusParticleSystem.gameObject.SetActive(true);
-            var main = hitStatusParticleSystem.main;
-            main.startColor = missPSColor;
-            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
-        }
-
-        protected virtual void OnFail()
-        {
-            hitStatusParticleSystem.gameObject.SetActive(true);
-            var main = hitStatusParticleSystem.main;
-            main.startColor = missPSColor;
-            hitStatusParticleSystem.Simulate(t: 0, withChildren: true, restart: true);
-        }
-
-        protected abstract UniTask ResolveAnimation(string animationName, CancellationToken ct);
-
-        protected async UniTask PlayAnimationAndWaitAsync(string animationName, int layer)
-        {
-            CancelCurrentAnimationAwait(layer);
-            if (isDebugMode)
-                Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Start");
-            var cts = new CancellationTokenSource();
-            AnimationCtsWithLayers.Add(key: cts, value: layer);
-
-            await ResolveAnimation(animationName: animationName, ct: cts.Token);
-            if (isDebugMode)
-                Debug.Log($"PlayAnimationAndWaitAsync {animationName} - Finish");
-        }
-
-        protected async UniTask PlayAnimationAndReturnToPoolAsync(string animationName, int layer)
-        {
-            await PlayAnimationAndWaitAsync(animationName: animationName, layer: layer);
-            if (isDebugMode)
-                Debug.Log($"PlayAnimationAndReturnToPoolAsync {animationName} - ReturnToPool");
-            ReturnToPool();
+            OnFail?.Invoke();
         }
     }
 }

@@ -1,7 +1,7 @@
 using System;
 using Features.MixMinigame.Datas;
 using Features.MixMinigame.Models;
-using Features.MixMinigame.ViewModels;
+using Features.MixMinigame.Presenters;
 using Features.MixMinigame.Views;
 using Features.ObjectPools.BasePool;
 using Features.ObjectPools.InjectedPool;
@@ -20,80 +20,86 @@ namespace Features.MixMinigame.Factories
         [SerializeField] private GameObject movablePrefab;
         [SerializeField] private GameObject driftPrefab;
 
-        private GameObjectPool<MixGameTileView> _clickablePool;
-        private GameObjectPool<MixGameTileView> _driftPool;
-        private GameObjectPool<MixGameTileView> _movablePool;
+        private GameObjectPool<MixGameTilePresenter> _clickablePool;
+        private GameObjectPool<MixGameTilePresenter> _driftPool;
+        private GameObjectPool<MixGameTilePresenter> _movablePool;
 
         [Inject] private IObjectResolver _objectResolver;
 
         private void Awake()
         {
-            _clickablePool = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
-            _movablePool   = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
-            _driftPool     = new InjectedGameObjectPool<MixGameTileView>(_objectResolver, transform);
+            _clickablePool =
+                new InjectedGameObjectPool<MixGameTilePresenter>(objectResolver: _objectResolver, root: transform);
+            _movablePool =
+                new InjectedGameObjectPool<MixGameTilePresenter>(objectResolver: _objectResolver, root: transform);
+            _driftPool =
+                new InjectedGameObjectPool<MixGameTilePresenter>(objectResolver: _objectResolver, root: transform);
         }
 
         private void OnValidate()
         {
-            if (!clickablePrefab && clickablePrefab.GetComponent<MixGameTileClickableView>())
+            if (!clickablePrefab && clickablePrefab.GetComponent<MixGameTileClickablePresenter>())
             {
-                Debug.LogError($"'{clickablePrefab.name}' is missing MixGameClickableView component.", this);
+                Debug.LogError(message: $"'{clickablePrefab.name}' is missing MixGameClickableView component.",
+                    context: this);
                 clickablePrefab = null;
             }
 
-            if (!movablePrefab && movablePrefab.GetComponent<MixGameTileMovableView>())
+            if (!movablePrefab && movablePrefab.GetComponent<MixGameTileMovablePresenter>())
             {
-                Debug.LogError($"'{movablePrefab.name}' is missing MixGameMovableView component.", this);
+                Debug.LogError(message: $"'{movablePrefab.name}' is missing MixGameMovableView component.",
+                    context: this);
                 movablePrefab = null;
             }
 
-            if (!driftPrefab && driftPrefab.GetComponent<MixGameTileDriftingView>())
+            if (!driftPrefab && driftPrefab.GetComponent<MixGameTileDriftingPresenter>())
             {
-                Debug.LogError($"'{driftPrefab.name}' is missing MixGameDriftingView component.", this);
+                Debug.LogError(message: $"'{driftPrefab.name}' is missing MixGameDriftingView component.",
+                    context: this);
                 driftPrefab = null;
             }
         }
 
-        public (MixGameTileModel, MixGameTileView, MixGameTileViewModel) GetTile(
+        public (MixGameTileModel, MixGameTilePresenter, MixGameTileView) GetTile(
             MixGameSequenceElementData data, Transform parent)
         {
             MixGameTileModel tileModel = data switch
             {
-                MixGameDriftingSequenceElementData driftingData => new MixGameTileClickableModel(driftingData,
-                    HitTiming,
-                    ForgivenessWindow),
-                MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(clickableData,
-                    HitTiming,
-                    ForgivenessWindow),
-                MixGameMovableSequenceElementData movableData => new MixGameTileMovableModel(movableData,
-                    HitTiming,
-                    ForgivenessWindow),
-                _ => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameDriftingSequenceElementData driftingData => new MixGameTileClickableModel(data: driftingData,
+                    hitTiming: HitTiming,
+                    forgivenessWindow: ForgivenessWindow),
+                MixGameClickableSequenceElementData clickableData => new MixGameTileClickableModel(data: clickableData,
+                    hitTiming: HitTiming,
+                    forgivenessWindow: ForgivenessWindow),
+                MixGameMovableSequenceElementData movableData => new MixGameTileMovableModel(data: movableData,
+                    hitTiming: HitTiming,
+                    forgivenessWindow: ForgivenessWindow),
+                _ => throw new ArgumentOutOfRangeException(paramName: nameof(data), actualValue: data, message: null)
             };
 
-            MixGameTileViewModel tileViewModel = data switch
+            MixGameTileView tileView = data switch
             {
-                MixGameDriftingSequenceElementData  => new MixGameTileClickableViewModel(tileModel),
-                MixGameClickableSequenceElementData => new MixGameTileClickableViewModel(tileModel),
-                MixGameMovableSequenceElementData   => new MixGameTileMovableViewModel(tileModel),
-                _                                   => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameDriftingSequenceElementData => new MixGameTileClickableView(tileModel),
+                MixGameClickableSequenceElementData => new MixGameTileClickableView(tileModel),
+                MixGameMovableSequenceElementData => new MixGameTileMovableView(tileModel),
+                _ => throw new ArgumentOutOfRangeException(paramName: nameof(data), actualValue: data, message: null)
             };
 
 
             var (pool, prefab) = data switch
             {
-                MixGameDriftingSequenceElementData  => (_driftPool, driftPrefab),
+                MixGameDriftingSequenceElementData => (_driftPool, driftPrefab),
                 MixGameClickableSequenceElementData => (_clickablePool, clickablePrefab),
-                MixGameMovableSequenceElementData   => (_movablePool, movablePrefab),
-                _                                   => throw new ArgumentOutOfRangeException(nameof(data), data, null)
+                MixGameMovableSequenceElementData => (_movablePool, movablePrefab),
+                _ => throw new ArgumentOutOfRangeException(paramName: nameof(data), actualValue: data, message: null)
             };
 
-            var tileView = pool.Spawn(prefab, parent);
+            var tilePresenter = pool.Spawn(prefab: prefab, newParent: parent);
 
-            tileView.Initialize(tileViewModel);
-            tileView.OnReturnToPool += () => pool.Despawn(prefab, tileView);
+            tilePresenter.Initialize(tileView);
+            tilePresenter.OnReturnToPool += () => pool.Despawn(prefab: prefab, component: tilePresenter);
 
-            return (tileModel, tileView, tileViewModel);
+            return (tileModel, tilePresenter, tileView);
         }
     }
 }
