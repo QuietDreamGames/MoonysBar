@@ -38,23 +38,23 @@ namespace Features.MixMinigame.Factories
 
         private void OnValidate()
         {
-            if (!clickablePrefab && clickablePrefab.GetComponent<MixGameTileClickablePresenter>())
+            if (clickablePrefab && !clickablePrefab.GetComponent<MixGameTileClickablePresenter>())
             {
-                Debug.LogError(message: $"'{clickablePrefab.name}' is missing MixGameClickableView component.",
+                Debug.LogError(message: $"'{clickablePrefab.name}' is missing MixGameClickablePresenter component.",
                     context: this);
                 clickablePrefab = null;
             }
 
-            if (!movablePrefab && movablePrefab.GetComponent<MixGameTileMovablePresenter>())
+            if (movablePrefab && !movablePrefab.GetComponent<MixGameTileMovablePresenter>())
             {
-                Debug.LogError(message: $"'{movablePrefab.name}' is missing MixGameMovableView component.",
+                Debug.LogError(message: $"'{movablePrefab.name}' is missing MixGameMovablePresenter component.",
                     context: this);
                 movablePrefab = null;
             }
 
-            if (!driftPrefab && driftPrefab.GetComponent<MixGameTileDriftingPresenter>())
+            if (driftPrefab && !driftPrefab.GetComponent<MixGameTileDriftingPresenter>())
             {
-                Debug.LogError(message: $"'{driftPrefab.name}' is missing MixGameDriftingView component.",
+                Debug.LogError(message: $"'{driftPrefab.name}' is missing MixGameDriftingPresenter component.",
                     context: this);
                 driftPrefab = null;
             }
