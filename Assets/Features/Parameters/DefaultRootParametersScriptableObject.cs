@@ -22,6 +22,9 @@ namespace Features.Parameters
         [SerializeField] private float enchantmentPlayfieldHeight        = 0.8f;
         [SerializeField] private float enchantmentCameraOrthographicSize = 5f;
 
+        [Header("Input Properties")]
+        [SerializeField] private float pointerClickThreshold = 0.5f;
+
         [Header("Debug Properties")]
         [SerializeField] private bool isInputDebugMode = false;
 
@@ -41,6 +44,10 @@ namespace Features.Parameters
             miniGamePlayfieldWidth: enchantmentPlayfieldWidth,
             miniGamePlayfieldHeight: enchantmentPlayfieldHeight,
             miniGameCameraOrthographicSize: enchantmentCameraOrthographicSize
+        );
+
+        public InputParameters InputParameters => new(
+            pointerClickThreshold: pointerClickThreshold
         );
 
         public DebugParameters DebugParameters => new(
@@ -72,6 +79,16 @@ namespace Features.Parameters
             MiniGamePlayfieldWidth         = miniGamePlayfieldWidth;
             MiniGamePlayfieldHeight        = miniGamePlayfieldHeight;
             MiniGameCameraOrthographicSize = miniGameCameraOrthographicSize;
+        }
+    }
+
+    public struct InputParameters
+    {
+        public float PointerClickThreshold;
+
+        public InputParameters(float pointerClickThreshold)
+        {
+            PointerClickThreshold = pointerClickThreshold;
         }
     }
 

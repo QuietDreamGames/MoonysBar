@@ -8,8 +8,8 @@ namespace Features.Enchantment.Presenters
         [SerializeField] private EnchantmentPointerCollider pointerCollider;
 
 
-        private float _pointerColliderDefaultRadius;
-        private bool  _wasActivatedLastFrame = false;
+        // private float _pointerColliderDefaultRadius;
+        // private bool  _wasActivatedLastFrame = false;
 
         // public override void OnUpdate(float deltaTime)
         // {

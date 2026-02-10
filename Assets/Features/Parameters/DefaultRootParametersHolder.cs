@@ -14,6 +14,9 @@ namespace Features.Parameters
         public MiniGameScreenParameters EnchantmentParameters =>
             defaultRootParametersScriptableObject.EnchantmentScreenParameters;
 
+        public InputParameters InputParameters =>
+            defaultRootParametersScriptableObject.InputParameters;
+
         public DebugParameters DebugParameters =>
             defaultRootParametersScriptableObject.DebugParameters;
     }

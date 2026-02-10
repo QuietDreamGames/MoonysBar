@@ -456,40 +456,40 @@ MonoBehaviour:
       m_Calls: []
   m_ActionEvents:
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 971378150}
-        m_TargetAssemblyTypeName: Features.InputDispatching.InputDispatcher, Assembly-CSharp
-        m_MethodName: OnClick
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 596b9052-6bf6-4dbf-9981-bb23a3055d0a
     m_ActionName: 'barMixGame/click[/Mouse/leftButton]'
   - m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 971378150}
-        m_TargetAssemblyTypeName: Features.InputDispatching.InputDispatcher, Assembly-CSharp
-        m_MethodName: OnClickHold
-        m_Mode: 0
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
     m_ActionId: 53c3ea55-49e6-4639-8627-e0d236291e63
     m_ActionName: 'barMixGame/clickhold[/Mouse/press]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: bb88ea02-2f7b-4e1a-9c13-baf1bcbe8bc7
+    m_ActionName: 'enchantment-game/click[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e749772a-fa2a-41f5-90ed-3b25cff42eb1
+    m_ActionName: 'enchantment-game/click-hold[/Mouse/press,/Pen/press]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: e5a22ff0-4191-45f5-acf6-8b43bef1af6f
+    m_ActionName: 'enchantment-game/pointer-move[/Mouse/delta,/Pen/delta]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 20e115ac-6a06-44d5-abc1-8340ae5b1f76
+    m_ActionName: 'ui-default/click[/Mouse/leftButton]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 3469d8b0-cf6c-4fb9-a9c2-c8e8aa5d75ef
+    m_ActionName: 'ui-default/click-hold[/Mouse/press,/Pen/press]'
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 0181cb12-578a-457a-9b82-67e1d03702d1
+    m_ActionName: 'ui-default/pointer-move[/Mouse/delta,/Pen/delta]'
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
-  m_DefaultActionMap: barMixGame
+  m_DefaultActionMap: ec410dce-aed6-4204-8b98-22ccec0f16d1
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
 --- !u!114 &971378150
@@ -556,7 +556,6 @@ MonoBehaviour:
   - {fileID: 971378148}
   - {fileID: 613908874}
   mainCamera: {fileID: 763696625}
-  inputDispatcher: {fileID: 971378150}
 --- !u!4 &1326121605
 Transform:
   m_ObjectHideFlags: 0

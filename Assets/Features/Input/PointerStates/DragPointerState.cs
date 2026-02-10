@@ -10,16 +10,19 @@ namespace Features.Input.PointerStates
         private readonly IInputDispatcher   _inputDispatcher;
         private readonly IMachine           _stateMachine;
         private readonly IInputEventBusSink _inputEventBus;
+        private readonly IInputClickTimer   _clickTimer;
 
         public DragPointerState(
             IMachine           stateMachine,
             IInputDispatcher   inputDispatcher,
-            IInputEventBusSink inputEventBus
+            IInputEventBusSink inputEventBus,
+            IInputClickTimer   clickTimer
         )
         {
             _inputDispatcher = inputDispatcher;
             _stateMachine    = stateMachine;
             _inputEventBus   = inputEventBus;
+            _clickTimer      = clickTimer;
         }
 
         public void Enter()
@@ -36,8 +39,13 @@ namespace Features.Input.PointerStates
 
         private void OnPointerRelease(InputAction.CallbackContext context)
         {
+            _clickTimer.Stop();
+
             _stateMachine.Enter<IdlePointerState>();
             _inputEventBus.PointerDragEndFire();
+
+            if (!_clickTimer.IsTimerAboveClickThreshold())
+                _inputEventBus.PointerClickFire();
         }
 
         private void OnPointerMove(InputAction.CallbackContext context, Vector2 delta)
