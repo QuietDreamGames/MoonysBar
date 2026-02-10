@@ -1,11 +1,20 @@
 using Features.FiniteStateMachine.Interfaces;
+using Features.GameSystem.Interfaces.Handlers;
 
 namespace Features.GameStateMachine.States
 {
     public class PauseState : IState
     {
+        private readonly IPausableSystemHandler[] _pausableSystemHandlers;
+
+        public PauseState(params IPausableSystemHandler[] pausableSystemHandlers)
+        {
+            _pausableSystemHandlers = pausableSystemHandlers;
+        }
+
         public void Enter()
         {
+            foreach (var pausableSystemHandler in _pausableSystemHandlers) pausableSystemHandler.Resume();
         }
 
         public void Exit()

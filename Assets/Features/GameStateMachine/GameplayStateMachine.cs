@@ -5,28 +5,34 @@ using Features.FiniteStateMachine.Interfaces;
 using Features.GameStateMachine.States;
 using Features.TimeSystem.Interfaces;
 using JetBrains.Annotations;
+using VContainer.Unity;
 
 namespace Features.GameStateMachine
 {
-    public class GameplayStateMachine : BaseStateMachine
+    public class GameplayStateMachine : BaseStateMachine, IStartable
     {
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public GameplayStateMachine(
             ITimeSystem gameplayTimeSystem
         ) : base(new Dictionary<Type, IState>())
         {
-            States.Add(typeof(InitState), new InitState(
-                this,
+            States.Add(key: typeof(InitState), value: new InitState(
+                stateMachine: this,
                 gameplayTimeSystem
             ));
 
-            States.Add(typeof(GameloopState), new GameloopState(
+            States.Add(key: typeof(GameloopState), value: new GameloopState(
                 gameplayTimeSystem
             ));
 
-            States.Add(typeof(EndLoseState), new EndLoseState());
+            States.Add(key: typeof(PauseState), value: new PauseState(
+                gameplayTimeSystem
+            ));
+        }
 
-            States.Add(typeof(EndWinState), new EndWinState());
+        public void Start()
+        {
+            Enter<InitState>();
         }
     }
 }

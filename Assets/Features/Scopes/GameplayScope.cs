@@ -23,7 +23,7 @@ namespace Features.Scopes
             builder.Register<ITimeSystem, InjectedTimeSystem>(Lifetime.Singleton);
             builder.Register<ITransientTimeCollector, InjectedTimeCollector>(Lifetime.Transient);
 
-            builder.Register<GameplayStateMachine>(Lifetime.Singleton);
+            builder.RegisterEntryPoint<GameplayStateMachine>(Lifetime.Singleton);
         }
     }
 }
