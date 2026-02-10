@@ -21,6 +21,8 @@ namespace Features.Scopes
             builder.Register<ITimeSystem, InjectedTimeSystem>(Lifetime.Singleton);
             builder.RegisterEntryPoint<InjectedTimeUpdateProvider>(Lifetime.Singleton).As<IUpdateProvider>();
             builder.Register<ITransientTimeCollector, InjectedTimeCollector>(Lifetime.Transient);
+
+            builder.RegisterEntryPoint<InteractionTimeSystemInitializer>(Lifetime.Singleton);
         }
     }
 }
