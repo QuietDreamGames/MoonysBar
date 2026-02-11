@@ -135,27 +135,32 @@ namespace Features.MixMinigame.Presenters
         {
             // todo: consider tileType
 
-            var bezierPath = new[]
+            var bezierLocal = new[]
             {
-                new Vector3(x: 3f, y: 0, z: 0),    // WP0
-                new Vector3(x: 0, y: 1.75f, z: 0), // A
-                new Vector3(x: 3f, y: 1.75f, z: 0) // B
+                new Vector3(x: 3f, y: 0, z: 0),    // WP0 (local)
+                new Vector3(x: 0, y: 1.75f, z: 0), // A (local)
+                new Vector3(x: 3f, y: 1.75f, z: 0) // B (local)
             };
 
+            // convert to world-space so gizmo and tween use the same space
+            var worldPath = new Vector3[bezierLocal.Length];
+            for (var i = 0; i < bezierLocal.Length; i++)
+                worldPath[i] = handleSpriteRenderer.transform.TransformPoint(bezierLocal[i]);
+
             var moveHandleTween = handleSpriteRenderer.transform
-                .DOLocalPath(path: bezierPath, duration: _moveDuration, pathType: PathType.CubicBezier)
+                .DOPath(path: worldPath, duration: _moveDuration, pathType: PathType.CubicBezier)
                 .SetEase(Ease.Linear);
             var moveDragCircleTween = timingDragCircleSpriteRenderer.transform
-                .DOLocalPath(path: bezierPath, duration: _moveDuration, pathType: PathType.CubicBezier)
+                .DOPath(path: worldPath, duration: _moveDuration, pathType: PathType.CubicBezier)
                 .SetEase(Ease.Linear);
             var moveColliderTween = pointerCollider.transform
-                .DOLocalPath(path: bezierPath, duration: _moveDuration, pathType: PathType.CubicBezier)
+                .DOPath(path: worldPath, duration: _moveDuration, pathType: PathType.CubicBezier)
                 .SetEase(Ease.Linear);
             var moveTextTween = textMeshVisualNumber.transform
-                .DOLocalPath(path: bezierPath, duration: _moveDuration, pathType: PathType.CubicBezier)
+                .DOPath(path: worldPath, duration: _moveDuration, pathType: PathType.CubicBezier)
                 .SetEase(Ease.Linear);
             var moveParticlesTween = hitStatusParticleSystem.transform
-                .DOLocalPath(path: bezierPath, duration: _moveDuration, pathType: PathType.CubicBezier)
+                .DOPath(path: worldPath, duration: _moveDuration, pathType: PathType.CubicBezier)
                 .SetEase(Ease.Linear);
 
             var textInitColor = textMeshVisualNumber.color;
