@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Features.MixMinigame.Models;
-using Features.MixMinigame.ViewModels;
+using Features.MixMinigame.Presenters;
 using Features.MixMinigame.Views;
 using Features.TimeSystem.Interfaces.Handlers;
 using JetBrains.Annotations;
@@ -11,7 +11,7 @@ namespace Features.MixMinigame
 {
     public class MixGameTilesHolderAndUpdater : IUpdateHandler, IDisposable
     {
-        private readonly List<(MixGameTileModel, MixGameTileView, MixGameTileViewModel)> _tiles;
+        private readonly List<(MixGameTileModel, MixGameTilePresenter, MixGameTileView)> _tiles;
         private readonly MixGameLevelTimerHolder                                         _timerHolder;
 
         [Inject]
@@ -20,7 +20,7 @@ namespace Features.MixMinigame
         {
             _timerHolder = timerHolder;
 
-            _tiles = new List<(MixGameTileModel, MixGameTileView, MixGameTileViewModel)>();
+            _tiles = new List<(MixGameTileModel, MixGameTilePresenter, MixGameTileView)>();
         }
 
         public void Dispose()
@@ -47,14 +47,14 @@ namespace Features.MixMinigame
             }
         }
 
-        public void AddTile(MixGameTileModel model, MixGameTileView view, MixGameTileViewModel viewModel)
+        public void AddTile(MixGameTileModel model, MixGameTilePresenter presenter, MixGameTileView view)
         {
-            _tiles.Add((model, view, viewModel));
-            view.OnReturnToPool += () => RemoveTileByView(view);
+            _tiles.Add((model, presenter, view));
+            presenter.OnReturnToPool += () => RemoveTileByPresenter(presenter);
         }
 
-        public bool TryFindTileByPresenter(MixGameTileView                presenter,
-            out (MixGameTileModel, MixGameTileView, MixGameTileViewModel) result)
+        public bool TryFindTileByPresenter(MixGameTilePresenter           presenter,
+            out (MixGameTileModel, MixGameTilePresenter, MixGameTileView) result)
         {
             if (presenter == null)
             {
@@ -83,20 +83,20 @@ namespace Features.MixMinigame
                 }
         }
 
-        public void RemoveTileByView(MixGameTileView view)
+        public void RemoveTileByPresenter(MixGameTilePresenter presenter)
         {
             for (var i = 0; i < _tiles.Count; i++)
-                if (_tiles[i].Item2 == view)
+                if (_tiles[i].Item2 == presenter)
                 {
                     _tiles.RemoveAt(i);
                     break;
                 }
         }
 
-        public void RemoveTileByViewModel(MixGameTileViewModel viewModel)
+        public void RemoveTileByView(MixGameTileView view)
         {
             for (var i = 0; i < _tiles.Count; i++)
-                if (_tiles[i].Item3 == viewModel)
+                if (_tiles[i].Item3 == view)
                 {
                     _tiles.RemoveAt(i);
                     break;

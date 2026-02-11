@@ -6,7 +6,7 @@ using DG.Tweening;
 using Features.TimeSystem.Interfaces.Handlers;
 using UnityEngine;
 
-namespace Features.View
+namespace Features.Presenter
 {
     public abstract class TweenedPresenter : MonoBehaviour, IUpdateHandler
     {

@@ -14,9 +14,8 @@ namespace Features.Scopes
         {
             builder.RegisterComponent(mixGameTileFactory);
             builder.Register<MixGamePlayingFieldService>(Lifetime.Scoped);
-            builder.RegisterEntryPoint<MixGameEntryPoint>();
+            builder.RegisterEntryPoint<MixGamePointerCollisionService>();
             builder.Register<MixGameLevelTimerHolder>(Lifetime.Scoped);
-            builder.Register<MixGamePointerCollisionService>(Lifetime.Scoped);
             builder.Register<MixGameTilesHolderAndUpdater>(Lifetime.Scoped);
         }
     }

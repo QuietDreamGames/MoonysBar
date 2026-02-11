@@ -428,11 +428,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 583488d1067543c7886b7c1b249f83f7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  isDebugMode: 1
   textMeshVisualNumber: {fileID: 9066126407885044807}
   hitStatusParticleSystem: {fileID: 6387240754902619264}
   hitPSColor: {r: 0.7254902, g: 1, b: 0.31764707, a: 1}
   missPSColor: {r: 0.8509804, g: 0.1764706, b: 0, a: 1}
-  isDebugMode: 1
   viewRotationPivot: {fileID: 534824697439880460}
   baseSpriteRenderer: {fileID: 334472601615067856}
   handleSpriteRenderer: {fileID: 6876508563962365933}

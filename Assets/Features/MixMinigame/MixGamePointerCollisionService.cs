@@ -2,13 +2,14 @@ using System;
 using Features.Interaction;
 using Features.Interaction.Enums;
 using Features.Interaction.Interfaces;
-using Features.MixMinigame.Views;
+using Features.MixMinigame.Presenters;
 using JetBrains.Annotations;
 using VContainer;
+using VContainer.Unity;
 
 namespace Features.MixMinigame
 {
-    public class MixGamePointerCollisionService : IDisposable
+    public class MixGamePointerCollisionService : IDisposable, IStartable
     {
         private readonly MixGameLevelTimerHolder      _levelTimerHolder;
         private readonly MixGameTilesHolderAndUpdater _tilesHolderAndUpdater;
@@ -27,13 +28,18 @@ namespace Features.MixMinigame
 
             _subscriptionDisposable = interactionEventBusFeed.Subscribe(
                 kinds: InteractionKind.Click | InteractionKind.Drag | InteractionKind.Hold,
-                phases: InteractionPhase.Action | InteractionPhase.Start | InteractionPhase.End,
+                phases: InteractionPhase.Action | InteractionPhase.Start | InteractionPhase.End
+                        | InteractionPhase.PrematureExit,
                 supportsMultipleHits: false,
                 handler: _onPointerColliderEvent
             );
 
             _tilesHolderAndUpdater = tilesHolderAndUpdater;
             _levelTimerHolder      = levelTimerHolder;
+        }
+
+        public void Start()
+        {
         }
 
         public void Dispose()
@@ -51,10 +57,10 @@ namespace Features.MixMinigame
                         HandleColliderClickAction(interactionEvent);
                     break;
                 case InteractionKind.Hold:
-                    HandleColliderHold(interactionEvent);
+                    HandleColliderHoldOrDrag(interactionEvent);
                     break;
                 case InteractionKind.Drag:
-                    HandleColliderDrag(interactionEvent);
+                    HandleColliderHoldOrDrag(interactionEvent);
                     break;
             }
         }
@@ -65,21 +71,21 @@ namespace Features.MixMinigame
                 return;
 
             if (!pointerCollider.IsClickable) return;
-            var tileClickableView = pointerCollider.GetComponentInParent<MixGameTileClickableView>();
+            var tileClickablePresenter = pointerCollider.GetComponentInParent<MixGameTileClickablePresenter>();
 
-            if (_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileClickableView, result: out var tile))
+            if (_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileClickablePresenter, result: out var tile))
                 tile.Item3.HandleInteraction(_levelTimerHolder.Timer);
         }
 
-        private void HandleColliderHold(InteractionEvent interactionEvent)
+        private void HandleColliderHoldOrDrag(InteractionEvent interactionEvent)
         {
             if (!interactionEvent.TryGetFirstTargetOfType<MixGamePointerCollider>(out var pointerCollider))
                 return;
 
             if (pointerCollider.IsClickable) return;
-            var tileMovableView = pointerCollider.GetComponentInParent<MixGameTileMovableView>();
+            var tileMovablePresenter = pointerCollider.GetComponentInParent<MixGameTileMovablePresenter>();
 
-            if (!_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileMovableView, result: out var tile))
+            if (!_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileMovablePresenter, result: out var tile))
                 return;
             bool isHeld;
             switch (interactionEvent.Phase)
@@ -90,30 +96,7 @@ namespace Features.MixMinigame
                 case InteractionPhase.End:
                     isHeld = false;
                     break;
-                default:
-                    return;
-            }
-
-            tile.Item3.HandleInteraction(levelTimerValue: _levelTimerHolder.Timer, isHeld: isHeld);
-        }
-
-        private void HandleColliderDrag(InteractionEvent interactionEvent)
-        {
-            if (!interactionEvent.TryGetFirstTargetOfType<MixGamePointerCollider>(out var pointerCollider))
-                return;
-
-            if (pointerCollider.IsClickable) return;
-            var tileMovableView = pointerCollider.GetComponentInParent<MixGameTileMovableView>();
-
-            if (!_tilesHolderAndUpdater.TryFindTileByPresenter(presenter: tileMovableView, result: out var tile))
-                return;
-            bool isHeld;
-            switch (interactionEvent.Phase)
-            {
-                case InteractionPhase.Start:
-                    isHeld = true;
-                    break;
-                case InteractionPhase.End:
+                case InteractionPhase.PrematureExit:
                     isHeld = false;
                     break;
                 default:
