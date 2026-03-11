@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Features.FiniteStateMachine;
 using Features.FiniteStateMachine.Interfaces;
 using Features.GameStateMachine.States;
-using Features.TimeSystem.Interfaces;
+using Features.GameSystem.Interfaces.Handlers;
 using JetBrains.Annotations;
 using VContainer.Unity;
 
@@ -13,20 +13,26 @@ namespace Features.GameStateMachine
     {
         [UsedImplicitly(ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature)]
         public GameplayStateMachine(
-            ITimeSystem gameplayTimeSystem
+            IReadOnlyList<IStartableSystemHandler> startableSystemHandlers,
+            IReadOnlyList<IPausableSystemHandler>  pausableSystemHandlers,
+            IReadOnlyList<IEndableSystemHandler>   endableSystemHandlers
         ) : base(new Dictionary<Type, IState>())
         {
             States.Add(key: typeof(InitState), value: new InitState(
                 stateMachine: this,
-                gameplayTimeSystem
+                startableSystemHandlers: startableSystemHandlers
             ));
 
             States.Add(key: typeof(GameloopState), value: new GameloopState(
-                gameplayTimeSystem
+                pausableSystemHandlers
             ));
 
             States.Add(key: typeof(PauseState), value: new PauseState(
-                gameplayTimeSystem
+                pausableSystemHandlers
+            ));
+
+            States.Add(key: typeof(EndState), value: new EndState(
+                endableSystemHandlers
             ));
         }
 
